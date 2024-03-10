@@ -18,3 +18,7 @@ export const isDataAsJSONEntryType = (obj: any): obj is dataAsJSONEntryType => {
 export const isHTMLButtonElement = (obj: any): obj is HTMLButtonElement => {
     return obj instanceof HTMLButtonElement;
 }
+
+export const isSVGElement = (obj: any): obj is SVGElement => {
+    return obj instanceof SVGElement;
+}
