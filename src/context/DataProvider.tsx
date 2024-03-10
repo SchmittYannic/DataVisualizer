@@ -100,7 +100,7 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
     useEffect(() => {
         setIsLoading(true);
 
-        const fetchTestData = async (datasetName: string, callback: Function) => {
+        const fetchTestData = async (datasetName: string, callback: React.Dispatch<React.SetStateAction<dataAsJSONEntryType[]>>) => {
             if (datasetName === "useAutoData") {
                 try {
                     const response = await fetch(`/data/AutoData.json`);
@@ -174,8 +174,6 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
                     }
                 });
             });
-
-            console.log(uniqueValuesInfo)
             
             // Convert sets to array of unique values and object to array of type counts
             const result: { [key: keyof uniqueValuesInfoType]: { uniqueValues: any[], typeCounts: [string, number][] } }  = {};
