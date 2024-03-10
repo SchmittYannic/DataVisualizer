@@ -2,10 +2,10 @@ import { PropsWithChildren } from "react"
 import { Link, LinkProps } from "react-router-dom"
 import ClipLoader from "./ClipLoader"
 
-type AsyncLinkType = PropsWithChildren<{
+type AsyncLinkPropsType = PropsWithChildren<{
     isLoading: boolean,
-    size: number,
-    color: string,
+    size?: number,
+    color?: string,
 } & LinkProps>
 
 const AsyncLink = ({
@@ -14,7 +14,7 @@ const AsyncLink = ({
     size=20,
     color="rgb(209,213,219)",
     ...props
-}: AsyncLinkType) => {
+}: AsyncLinkPropsType) => {
     return (
         <>
             {isLoading ? (
