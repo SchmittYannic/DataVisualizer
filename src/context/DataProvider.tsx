@@ -103,7 +103,7 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
         const fetchTestData = async (datasetName: string, callback: Function) => {
             if (datasetName === "useAutoData") {
                 try {
-                    const response = await fetch(`${process.env.PUBLIC_URL}/data/AutoData.json`);
+                    const response = await fetch(`/data/AutoData.json`);
                     const AutoData = await response.json();
                     callback(AutoData);
                 } catch (err) {
@@ -111,7 +111,7 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
                 }
             } else if (datasetName === "useWetterData") {     
                 try {
-                    const response = await fetch(`${process.env.PUBLIC_URL}/data/WetterData.json`);
+                    const response = await fetch(`/data/WetterData.json`);
                     const WetterData = await response.json();
                     callback(WetterData);
                 } catch (err) {
@@ -174,14 +174,17 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
                     }
                 });
             });
+
+            console.log(uniqueValuesInfo)
             
             // Convert sets to array of unique values and object to array of type counts
-            const result: { [key: string]: { uniqueValues: any[], typeCounts: [string, number][] } }  = {};
+            const result: { [key: keyof uniqueValuesInfoType]: { uniqueValues: any[], typeCounts: [string, number][] } }  = {};
             const objKeys = Object.keys(uniqueValuesInfo) as (keyof uniqueValuesInfoType)[];
             objKeys.forEach(key => {
-                result[key].uniqueValues = Array.from(uniqueValuesInfo[key].uniqueValues);
-                result[key].typeCounts = Object.entries(uniqueValuesInfo[key].typeCounts)
-                    .sort((a, b) => b[1] - a[1]);
+                Object.assign(result, { [key]: {
+                    "uniqueValues": Array.from(uniqueValuesInfo[key].uniqueValues),
+                    "typeCounts": Object.entries(uniqueValuesInfo[key].typeCounts).sort((a, b) => b[1] - a[1])
+                }})
             });
             
             return result;
@@ -194,7 +197,6 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
         const dateColumnsArray: string[] = [];
 
         for (let column in columnNames) {
-
             const uniqueValueCount = uniqueValuesInfo[columnNames[column]].uniqueValues.length;
 
             if (uniqueValueCount <= 10) {
