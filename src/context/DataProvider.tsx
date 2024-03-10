@@ -1,9 +1,7 @@
 import { useState, createContext, useEffect, PropsWithChildren, ReactElement } from "react";
 import { placeholderString } from "../constants";
+import { dataAsJSONEntryType } from "../utils/types";
 
-type dataAsJSONEntryType = {
-    [key: string]: any,
-};
 type DataTypeCounts = { [key: string]: number };
 
 export type DataContextType = {
