@@ -71,6 +71,7 @@ const DropZone = () => {
             worker: true,
             header: true,
             dynamicTyping: true,
+            skipEmptyLines: true,
             complete: (results) => {               
                 if (results.data.length > 5000 || (results.meta.fields && results.meta.fields.length > 20)) {
                     setIsLoading(false);
