@@ -1,0 +1,33 @@
+.infobox {
+    min-width: var(--min-page-width);
+    max-width: 600px;
+    padding: var(--center-container-paddingY) var(--center-container-paddingX);
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    display: flex;
+}
+
+.infobox img {
+    width: 50px;
+    height: 50px;
+}
+
+.infobox-content {
+    margin-left: 35px;
+    /* padding: calc(25px / 2) 0; */
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+@media only screen and (max-width: 680px) {
+    .infobox {
+        padding: var(--center-container-paddingY-mobile) var(--center-container-paddingX-mobile);
+    }
+
+    .infobox img {
+        width: 40px;
+        height: 40px;
+    }
+}
