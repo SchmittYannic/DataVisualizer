@@ -1,0 +1,103 @@
+.dropzone-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-width: var(--min-page-width);
+    padding: var(--center-container-paddingY) var(--center-container-paddingX);
+    background-color: var(--background-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.upload-text {
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.dropzone-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 0;
+    width: 100%;
+    height: 16rem;
+    border-width: 2px;
+    border-style: dashed;
+    border-radius: 0.5rem;
+    border-color: #d1d5db;
+    cursor: pointer;
+    background-color: #f9fafb;
+}
+
+.dropzone-label:hover {
+    background-color: #f3f4f6;
+}
+
+.dropzone-label:focus {
+    background-color: #e0e2e5;
+}
+
+.dark .dropzone-label {
+    background-color: #374151;
+}
+
+.dark .dropzone-label:hover {
+    background-color: #4b5563;
+}
+
+
+.dropzone-content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 1.5rem;
+}
+
+.dropzone-svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 0.75rem;
+    color: #9ca3af;
+}
+
+.dropzone-headtext {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    padding: 0 15px;
+    color: #6b7280;
+}
+
+.dark .dropzone-headtext {
+    color: #9ca3af;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-5);
+}
+
+.dropzone-subtext {
+    margin-top: 5px;
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-none);
+    color: #6b7280;
+}
+
+.dark .dropzone-subtext {
+    color: #9ca3af;
+}
+
+.dropzone-input {
+    visibility: hidden;
+}
+
+.filename-display {
+    margin-bottom: 5px;
+}
+
+@media only screen and (max-width: 680px) {
+    .dropzone-container {
+        padding: var(--center-container-paddingY-mobile) var(--center-container-paddingX-mobile);
+    }
+}
