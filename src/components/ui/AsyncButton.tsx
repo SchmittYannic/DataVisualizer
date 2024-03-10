@@ -1,11 +1,11 @@
-import { PropsWithChildren } from "react"
+import { ButtonHTMLAttributes, PropsWithChildren } from "react"
 import ClipLoader from "./ClipLoader"
 
 type AsyncButtonType = PropsWithChildren<{
     isLoading: boolean,
-    size: number,
-    color: string,
-}>
+    size?: number,
+    color?: string,
+} & ButtonHTMLAttributes<HTMLButtonElement>>
 
 const AsyncButton = ({
     isLoading,
