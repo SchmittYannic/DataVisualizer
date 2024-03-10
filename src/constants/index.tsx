@@ -4,8 +4,9 @@ import { AiFillBoxPlot, AiOutlineAreaChart } from "react-icons/ai";
 import { GiHistogram } from "react-icons/gi";
 import { BiLineChart } from "react-icons/bi";
 import { PiChartScatterBold } from "react-icons/pi";
+import { ChartOptionsType, DefaultAccordionStateType } from "../utils/types";
 
-const ChartOptions = [
+const ChartOptions: ChartOptionsType[] = [
     { 
         name: "Säulendiagramm",
         action: "barchart",
@@ -49,7 +50,7 @@ const colorSchemeOptions = ["accent", "category10",  "dark2", "paired", "pastel1
 
 const navigationTabName = "Diagrammkonfiguration";
 
-const defaultMultiAccordionState = [
+const defaultMultiAccordionState: DefaultAccordionStateType[] = [
     {
         id: 0,
         name: "Chartoptionen",
