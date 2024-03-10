@@ -5,14 +5,14 @@ import "./TextArea.css";
 type TextAreaPropsType = {
     value: string,
     label: string,
-    onChange: Function,
+    onChange: (input: string) => void,
     cols?: number,
     rows?: number,
 }
 
 const TextArea = ({ value, label, onChange, cols=30, rows=10 }: TextAreaPropsType) => {
     const textareaId = useId();
-    const [textareaValue, setTextareaValue] = useState(value);
+    const [textareaValue, setTextareaValue] = useState<string>(value);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {

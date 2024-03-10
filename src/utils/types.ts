@@ -7,7 +7,26 @@ export type useScrollPositionType = {
     scrollX: undefined | number,
 }
 
+export type PositionsType = {
+    y:number,
+    x:number,
+}
+
 export type TabType = "upload" | "data" | "visualisierung";
+
+export type SettingsTabType = "Diagrammkonfiguration" | "Chartoptionen" | "Dimensionen" | "Daten" | "Allgemein" | "Elemente" | "Titel" | "X-Achsenbeschriftung" | "Y-Achsenbeschriftung" | "Teilstriche und Gitternetz" | "Tooltip" | "Download"
+
+export type DefaultAccordionStateType = {
+    id: number,
+    name: SettingsTabType,
+    isExpanded: boolean,
+}
+
+export type ChartOptionsType = {
+    name: string,
+    action: ChartType,
+    icon: JSX.Element,
+}
 
 export type ColorType = {
     r: number,

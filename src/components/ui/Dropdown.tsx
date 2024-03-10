@@ -8,11 +8,18 @@ type DropdownType = PropsWithChildren<{
     OptionsList: any[],
     selectedOption: any,
     setSelectedOption: Function,
-    searchable: boolean,
+    searchable?: boolean,
     label: string,
 }>
 
-const Dropdown = ({ OptionsList, selectedOption, setSelectedOption, searchable=false, label, children }: DropdownType) => {
+const Dropdown = ({
+    OptionsList,
+    selectedOption,
+    setSelectedOption,
+    searchable=false,
+    label,
+    children
+}: DropdownType) => {
     const comboboxId = useId();
     const listboxId = useId();
     const labelId = useId();

@@ -6,7 +6,7 @@ type NumberInputPropsType = {
     min: number,
     max: number,
     defaultValue: number,
-    onChange: Function,
+    onChange: (input: number) => void,
     label: string,
 }
 
