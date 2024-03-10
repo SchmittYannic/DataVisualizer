@@ -7,12 +7,13 @@ import {
 } from "../assets";
 import VideoProgress from "./VideoProgress";
 import useIsDocumentHidden from "../hooks/useIsDocumentHidden";
+import { TabType } from "../utils/types";
 import "./VideoSection.css";
 
 const VideoSection = () => {
 
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [activeTab, setActiveTab] = useState<string>("upload");
+    const [activeTab, setActiveTab] = useState<TabType>("upload");
     const isDocumentHidden = useIsDocumentHidden();
 
     const videoWidth = 1024;

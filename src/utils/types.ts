@@ -7,6 +7,8 @@ export type useScrollPositionType = {
     scrollX: undefined | number,
 }
 
+export type TabType = "upload" | "data" | "visualisierung";
+
 export type ColorType = {
     r: number,
     g: number,
