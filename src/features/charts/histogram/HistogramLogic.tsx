@@ -1,12 +1,13 @@
 import * as d3 from "d3";
-import { SettingsType } from "../../../utils/types";
+import { SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { MouseEvent } from "react";
 
 type HistogramLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
-    data: any[],
+    data: dataAsJSONEntryType[],
 }
 
-export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: HistogramLogicPropsType) => {
+export const histogram = (selection: any, props: HistogramLogicPropsType) => {
     const { settingsRef, data } = props;
 
     const { xColumn } = settingsRef.current.dataInput;
@@ -55,7 +56,7 @@ export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         tooltipBgColor,
     } = settingsRef.current.tooltip;
 
-    const xValue = d => d[xColumn];
+    const xValue = (d: dataAsJSONEntryType) => d[xColumn] as number;
 
     //select tooltipWrapper element on page
     const tooltipWrapper = d3.select("#chart-tt-wrapper");
@@ -89,13 +90,13 @@ export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         .style("pointer-events", "none")
         .style("transform", "translate(-100%, -100%)");
 
-    function mouseover(){
+    function mouseover(this: SVGRectElement){
         tooltip.style('visibility', 'visible');
         d3.selectAll('.histBar').attr('opacity', '0.7');
         d3.select(this).attr('opacity', '1');
     };
-    function mousemove(event){
-        var d = d3.select(this).data()[0];
+    function mousemove(this: SVGRectElement, event: MouseEvent){
+        var d = d3.select<SVGRectElement, d3.Bin<dataAsJSONEntryType, number>>(this).data()[0];
 
         tooltip
             .html(xaxisText + ': ' + d.x0 + ' - ' + d.x1 + '</br></br>'
@@ -111,21 +112,24 @@ export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
     const innerWidth = svgWidth - svgMarginLeft - svgMarginRight;
     const innerHeight = svgHeight - svgMarginTop - svgMarginBottom;
 
+    const minXValue = d3.min(data, xValue) as number;
+    const maxXValue = d3.max(data, xValue) as number;
+
     const xScale = d3.scaleLinear()
-        .domain(d3.extent(data, xValue))	
+        .domain([minXValue, maxXValue])	//d3.extent(data, xValue)
         .range([0, innerWidth])
         .nice();
 
-    let histogram = d3.bin()
+    let histogram = d3.bin<dataAsJSONEntryType, number>()
         .value(xValue)
-        .domain(xScale.domain())
+        .domain([minXValue, maxXValue])
         .thresholds(xScale.ticks(binNumber));
 
     let bins = histogram(data);
 
     const yScale = d3.scaleLinear()
         .range([innerHeight, 0])
-        .domain([0, d3.max(bins, d => d.length)]);
+        .domain([0, d3.max(bins, d => d.length) as number]);
 
     const background = selection.selectAll('.backgroundHistogramChart').data([null]);
     background.enter().append('rect')
@@ -146,7 +150,7 @@ export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
                 `translate(${svgMarginLeft},${svgMarginTop})`
                 );
 
-    const formatLarge = number =>
+    const formatLarge = (number: d3.NumberValue) =>
         d3.format('~s')(number)
             .replace('G', ' Mrd.')
             .replace('M', ' Mio.')
@@ -154,8 +158,8 @@ export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
 
     const formatSmall = d3.format('~f');
 
-    var customFormat = function(val) { 
-        return Math.abs(val) < 1 ? formatSmall(val) : formatLarge(val);
+    var customFormat = function(val: d3.NumberValue) { 
+        return Math.abs(val.valueOf()) < 1 ? formatSmall(val) : formatLarge(val);
     };
 
     const xAxis = d3.axisBottom(xScale)
@@ -229,7 +233,7 @@ export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .style('text-anchor', 'end')
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
-            .attr("transform", function(d) {
+            .attr("transform", function() {
                 return "rotate(-30)" 
             })
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
@@ -280,13 +284,20 @@ export const histogram = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         .on('mouseover', mouseover)
         .on('mousemove', mousemove)
         .on('mouseout', mouseout)
-            .attr("x", d => xScale(d.x0) + 5)
-            .attr("y", d => yScale(d.length))
-            .attr("width", d => Math.max(0, xScale(d.x1) - xScale(d.x0) - 10))
-            .attr("height", d => yScale(0) - yScale(d.length))
-            .attr("data-x0", d => d.x0)
-            .attr("data-x1", d => d.x1)
-            .attr("data-y", d => d.length)
+            .attr("x", (d: d3.Bin<dataAsJSONEntryType, number>) => {
+                if (!d.x0) return 0
+                return xScale(d.x0) + 5
+            })
+            .attr("y", (d: d3.Bin<dataAsJSONEntryType, number>) => yScale(d.length))
+            .attr("width", (d: d3.Bin<dataAsJSONEntryType, number>) => {
+                if (!d.x0) return 0
+                if (!d.x1) return 0
+                return Math.max(0, xScale(d.x1) - xScale(d.x0) - 10)
+            })
+            .attr("height", (d: d3.Bin<dataAsJSONEntryType, number>) => yScale(0) - yScale(d.length))
+            .attr("data-x0", (d: d3.Bin<dataAsJSONEntryType, number>) => d.x0)
+            .attr("data-x1", (d: d3.Bin<dataAsJSONEntryType, number>) => d.x1)
+            .attr("data-y", (d: d3.Bin<dataAsJSONEntryType, number>) => d.length)
             .transition().duration(1000)
             .attr('opacity', 1);
     histBars.exit().remove();
