@@ -1,6 +1,11 @@
 export type dataAsJSONEntryType = {
-    [key: string]: any,
+    [key: string]: string | number,
 };
+
+export type BarchartDataEntryType = {
+    key: string;
+    value: number;
+}
 
 export type useScrollPositionType = {
     scrollY: undefined | number,
@@ -15,6 +20,8 @@ export type PositionsType = {
 export type TabType = "upload" | "data" | "visualisierung";
 
 export type SettingsTabType = "Diagrammkonfiguration" | "Chartoptionen" | "Dimensionen" | "Daten" | "Allgemein" | "Elemente" | "Titel" | "X-Achsenbeschriftung" | "Y-Achsenbeschriftung" | "Teilstriche und Gitternetz" | "Tooltip" | "Download"
+
+export type ColorschemeType = "accent" | "category10" | "dark2" | "paired" | "pastel1" | "pastel2" | "set1" | "set2" | "set3" | "tableau10"
 
 export type DefaultAccordionStateType = {
     id: number,
@@ -58,7 +65,7 @@ type SettingsGeneralType = {
 }
 
 type SettingsChartElementsType = {
-    colorscheme: string, // check
+    colorscheme: ColorschemeType,
     circleOpacity: number,
     circleRadius: number,
     binNumber: number,
