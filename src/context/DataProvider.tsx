@@ -304,9 +304,6 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
                 }
             }
         });
-        console.log("json: ", dataAsJSON)
-        console.log("value: ", data[0]["date"])
-        console.log("type: ", typeof data[0]["date"])
 
         setDateOptions(dateOptions);
         setDateColumnsLength(dateOptions.length);
