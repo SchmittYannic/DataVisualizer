@@ -287,7 +287,7 @@ export const barchart = (selection: any, props: BarchartLogicPropsType) => {
         .on('mouseover', mouseover)
         .on('mousemove', mousemove)
         .on('mouseout', mouseout)
-        .on('mouseenter', function(this: SVGRectElement, event: MouseEvent, actual: BarchartDataEntryType){
+        .on('mouseenter', function(this: SVGRectElement, _event: MouseEvent, actual: BarchartDataEntryType){
     		//Alle Rechtecke werden durchsichtig
   			d3.selectAll('.bar')
     			.attr('opacity', 0.7);
