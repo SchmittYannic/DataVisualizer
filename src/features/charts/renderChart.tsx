@@ -138,7 +138,7 @@ const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJS
 
     function calcAbs() {
         const abs = d3.rollup(dataAsJSON, (d) => d.length, (d) => d[xColumn]);
-        const absArray = Array.from(abs, ([key, value]) => ({ key, value })).sort((a, b) => d3.ascending(b.value, a.value));
+        const absArray = Array.from(abs, ([key, value]) => ({ key: String(key), value })).sort((a, b) => d3.ascending(b.value, a.value));
         return absArray
     }
 
