@@ -1,11 +1,11 @@
 import * as d3 from "d3"
-import { SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { PathDataEntryType, SettingsType, dataAsJSONEntryType } from "../../../utils/types";
 import { MouseEvent } from "react";
 
 type AreachartLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
     data: dataAsJSONEntryType[],
-    pathdata: [dataAsJSONEntryType, dataAsJSONEntryType[]][],
+    pathdata: PathDataEntryType[],
 }
 
 export const areachart = (selection: any, props: AreachartLogicPropsType) => {
@@ -116,9 +116,9 @@ export const areachart = (selection: any, props: AreachartLogicPropsType) => {
             .style('top', (event.pageY) + 'px');
     }
     function mousemoveDatapoint(this: SVGCircleElement, event: MouseEvent){
-        var d = d3.select(this).data()[0];
+        var d = d3.select<SVGCircleElement, dataAsJSONEntryType>(this).data()[0];
         var formatTime = d3.timeFormat("%H:%M %A %d.%m.%Y");
-        var formated = formatTime(d[xColumn]);
+        var formated = formatTime(new Date(d[xColumn]));
         
         tooltip
             .html('<b><u>Datenpunkt</u></b> </br>' + yaxisText + ': ' + d[yColumn] + '</br></br>' + xaxisText + ': ' + formated)
@@ -220,7 +220,7 @@ export const areachart = (selection: any, props: AreachartLogicPropsType) => {
             .attr("font-size", yaxisFontSize)
             .attr("font-family", fontFamily);
   
-	const xAxisG = g.select('.x-axis') as unknown as d3.Selection<SVGGElement, null, d3.BaseType, unknown>
+	const xAxisG = g.select('.x-axis')
     const xAxisGEnter = gEnter
         .append('g')
             .attr('class', 'x-axis');
@@ -241,7 +241,7 @@ export const areachart = (selection: any, props: AreachartLogicPropsType) => {
             .style('text-anchor', 'end')
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
-            .attr("transform", function(d) {
+            .attr("transform", function() {
                 return "rotate(-30)" 
             })
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
@@ -296,14 +296,14 @@ export const areachart = (selection: any, props: AreachartLogicPropsType) => {
             .attr('class', 'area-path')
             .attr('stroke-width', 0) // muss wieder auf 0 gesetzt werden um bugs zu vermeiden
             .attr("stroke-linejoin", "round")
-            .attr('d', d => areaGenerator(d.values))
+            .attr('d', (d: PathDataEntryType) => areaGenerator(d.values))
             //.attr('d', areaGenerator(data))
             .transition().duration(duration)
             .attr("fill", `rgba(${areaColor.r}, ${areaColor.g}, ${areaColor.b}, ${areaColor.a})`)
 
     areas.exit().remove();
   
-    const lineGenerator = d3.line()
+    const lineGenerator = d3.line<dataAsJSONEntryType>()
         .x(d => xScale(xValue(d)))
         .y(d => yScale(yValue(d)));
 
@@ -321,7 +321,7 @@ export const areachart = (selection: any, props: AreachartLogicPropsType) => {
             .attr('class', 'line-path') //muss bei Path im merge block sein
             .attr('stroke-width', lineWidth)
             .attr("stroke", `rgba(${lineColor.r}, ${lineColor.g}, ${lineColor.b}, ${lineColor.a})`)
-        .attr('d', d => lineGenerator(d.values))
+        .attr('d', (d: PathDataEntryType) => lineGenerator(d.values))
         .transition().duration(duration)
         .attr('opacity', 1);
 
@@ -335,13 +335,13 @@ export const areachart = (selection: any, props: AreachartLogicPropsType) => {
         .on('mouseover', mouseover)
         .on('mousemove', mousemoveDatapoint)
         .on('mouseout', mouseout)
-            .attr('cy', (d) => yScale(yValue(d)))
-            .attr('cx', d => xScale(xValue(d)))
-            .attr('data-x', d => {
+            .attr('cy', (d: dataAsJSONEntryType) => yScale(yValue(d)))
+            .attr('cx', (d: dataAsJSONEntryType) => xScale(xValue(d)))
+            .attr('data-x', (d: dataAsJSONEntryType) => {
                 var formatTime = d3.timeFormat("%H:%M %A %d.%m.%Y");
-                return formatTime(d[xColumn]);
+                return formatTime(new Date(d[xColumn]));
             })
-            .attr('data-y', d => d[yColumn])
+            .attr('data-y', (d: dataAsJSONEntryType) => d[yColumn])
             .attr('r', circleRadius)
             .transition().duration(duration)
             .attr("fill", `rgb(${pointColor.r}, ${pointColor.g}, ${pointColor.b})`)
