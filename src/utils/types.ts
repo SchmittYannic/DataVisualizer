@@ -7,6 +7,11 @@ export type BarchartDataEntryType = {
     value: number;
 }
 
+export type PathDataEntryType = {
+    key: "pathdata",
+    values: dataAsJSONEntryType[]
+}
+
 export type useScrollPositionType = {
     scrollY: undefined | number,
     scrollX: undefined | number,
