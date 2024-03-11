@@ -1,12 +1,13 @@
 import * as d3 from "d3";
-import { SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { BarchartDataEntryType, ColorschemeType, SettingsType } from "../../../utils/types";
+import { MouseEvent } from "react";
 
 type BarchartLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
-    data: dataAsJSONEntryType[],
+    data: BarchartDataEntryType[],
 }
 
-export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: BarchartLogicPropsType) => {
+export const barchart = (selection: any, props: BarchartLogicPropsType) => {
 	const { settingsRef, data } = props;
 
     const {
@@ -55,20 +56,20 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
         tooltipBgColor,
     } = settingsRef.current.tooltip;
 
-    const colorDict = {
-        "accent": d3.schemeAccent,
-        "category10": d3.schemeCategory10,
-        "dark2": d3.schemeDark2,
-        "paired": d3.schemePaired,
-        "pastel1": d3.schemePastel1,
-        "pastel2": d3.schemePastel2,
-        "set1": d3.schemeSet1,
-        "set2": d3.schemeSet2,
-        "set3": d3.schemeSet3,
-        "tableau10": d3.schemeTableau10,
+    const colorDict: { [key in ColorschemeType]: readonly string[] } = {
+        accent: d3.schemeAccent,
+        category10: d3.schemeCategory10,
+        dark2: d3.schemeDark2,
+        paired: d3.schemePaired,
+        pastel1: d3.schemePastel1,
+        pastel2: d3.schemePastel2,
+        set1: d3.schemeSet1,
+        set2: d3.schemeSet2,
+        set3: d3.schemeSet3,
+        tableau10: d3.schemeTableau10,
     }
 
-    const yValue = d => d.value
+    const yValue = (d: BarchartDataEntryType) => d.value
 
     //select tooltipWrapper element on page
     const tooltipWrapper = d3.select('#chart-tt-wrapper');
@@ -104,8 +105,9 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
     function mouseover(){
         tooltip.style('visibility', 'visible');
     }
-    function mousemove(event){
-        let d = d3.select(this).data()[0]
+    function mousemove(this: SVGRectElement , event: MouseEvent){
+        let d = d3.select<SVGRectElement, BarchartDataEntryType>(this).data()[0];
+        
         tooltip
         .html(xaxisText + ': ' + d.key + '</br></br>' 
                 + yaxisText + ': ' + d.value)
@@ -126,13 +128,13 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
   
     const yScale = d3.scaleLinear()
         .range([innerHeight, 0])
-        .domain([0, d3.max(data, yValue)])
+        .domain([0, d3.max(data, yValue) as number])
             .nice();
   
     const colorScale = d3.scaleOrdinal(colorDict[`${colorscheme}`])
         .domain(data.map(d => d.key));
 
-    const background = selection.selectAll('.backgroundBarChart').data([null]);
+    const background = selection.selectAll('.backgroundBarChart').data([null])
     background.enter().append('rect')
             .attr('class', 'backgroundBarChart')
         .merge(background)
@@ -151,7 +153,7 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
             );
 
 
-    const formatLarge = number =>
+    const formatLarge = (number: d3.NumberValue) =>
         d3.format('~s')(number)
         .replace('G', ' Mrd.')
         .replace('M', ' Mio.')
@@ -159,8 +161,8 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
          
     const formatSmall = d3.format('~f');
        
-    let customFormat = function(val) { 
-        return Math.abs(val) < 1 ? formatSmall(val) : formatLarge(val);
+    let customFormat = function(val: d3.NumberValue) { 
+        return Math.abs(val.valueOf()) < 1 ? formatSmall(val) : formatLarge(val);
     };
 
     const xAxis = d3.axisBottom(xScale)
@@ -223,6 +225,7 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
         .selectAll('.tick line')
             .attr("stroke", `rgba(${tickLineColor.r}, ${tickLineColor.g}, ${tickLineColor.b}, ${tickLineColor.a})`)
             .attr("stroke-width", tickLineWidth);
+
     xAxisG
         .merge(xAxisGEnter)
         .selectAll('.tick text')
@@ -232,7 +235,7 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
             .attr("font-family", fontFamily)
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
         .attr("dy", ".15em")
-            .attr("transform", function(d) {
+            .attr("transform", function() {
                     return "rotate(-30)" 
                     });
   
@@ -274,17 +277,17 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
         .merge(rectangles)
             .attr('class', 'bar')
             .attr('opacity', 0) // muss im merge sein
-            .attr('x', d => xScale(d.key))
-            .attr('y', d => yScale(yValue(d)))
+            .attr('x', (d: BarchartDataEntryType) => xScale(d.key))
+            .attr('y', (d: BarchartDataEntryType) => yScale(yValue(d)))
             .attr('width', xScale.bandwidth())
-            .attr('height', d => innerHeight - yScale(yValue(d)))
-            .attr('fill', d => colorScale(d.key))
-            .attr("data-x", d => yValue(d))
-            .attr("data-y", d => d.key)
+            .attr('height', (d: BarchartDataEntryType) => innerHeight - yScale(yValue(d)))
+            .attr('fill', (d: BarchartDataEntryType) => colorScale(d.key))
+            .attr("data-x", (d: BarchartDataEntryType) => yValue(d))
+            .attr("data-y", (d: BarchartDataEntryType) => d.key)
         .on('mouseover', mouseover)
         .on('mousemove', mousemove)
         .on('mouseout', mouseout)
-        .on('mouseenter', function(event, actual){
+        .on('mouseenter', function(this: SVGRectElement, event: MouseEvent, actual: BarchartDataEntryType){
     		//Alle Rechtecke werden durchsichtig
   			d3.selectAll('.bar')
     			.attr('opacity', 0.7);
@@ -312,22 +315,26 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
                     .attr('class', 'divergence')
                     .attr('text-anchor', 'middle')
                 .merge(divergenceText)
-                    .attr('x', d => xScale(d.key) + xScale.bandwidth() / 2)
-                    .attr('y', d => yScale(d.value) - 5)
+                    .attr('x', (d: BarchartDataEntryType) => {
+                        const xScaleValue = xScale(d.key);
+                        if (!xScaleValue) return 0
+                        return xScaleValue + xScale.bandwidth() / 2
+                    })
+                    .attr('y', (d: BarchartDataEntryType) => yScale(d.value) - 5)
                     .attr('fill', `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
                     .attr("font-size", tickFontSize)
                     .attr("font-family", fontFamily)
-                .text((d, idx) => {
+                .text((d: BarchartDataEntryType, idx: number) => {
                     const divergence = (d.value - actual.value).toFixed(fixedValue);
                 
                     let text = '';
-                    if (divergence > 0) text += '+';
+                    if (Number(divergence) > 0) text += '+';
                     text += `${divergence}`;
 
                     return idx !== data.indexOf(actual) ? text : '';
                 });
   	    })
-        .on('mouseleave', function () {
+        .on('mouseleave', function (this: SVGRectElement,) {
             //alle Bars wieder undurchsichtig
             d3.selectAll('.bar')
                 .attr('opacity', 1);
@@ -361,9 +368,13 @@ export const barchart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
             .attr("font-size", tickFontSize)
             .attr("font-family", fontFamily)
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
-            .attr('x', d => xScale(d.key) + xScale.bandwidth() / 2)
-            .attr('y', d => yScale(d.value) - 5)
-        .text( d => `${d.value}`);
+            .attr('x', (d: BarchartDataEntryType) => {
+                const xScaleValue = xScale(d.key);
+                if (!xScaleValue) return 0
+                return xScaleValue + xScale.bandwidth() / 2
+            })
+            .attr('y', (d: BarchartDataEntryType) => yScale(d.value) - 5)
+        .text( (d: BarchartDataEntryType) => `${d.value}`);
   
     barValueText.exit().remove();
 };
