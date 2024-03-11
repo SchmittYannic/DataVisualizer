@@ -10,7 +10,7 @@ import { areachart } from "./areachart/AreachartLogic";
 import { calcKurtosis } from "./boxplot/calcKurtosis";
 import { calcSkewness } from "./boxplot/calcSkewness";
 import { placeholderString } from "../../constants";
-import { SettingsType, dataAsJSONEntryType } from "../../utils/types";
+import { BarchartDataEntryType, PathDataEntryType, SettingsType, dataAsJSONEntryType } from "../../utils/types";
 
 const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJSON: dataAsJSONEntryType[]) => {
     const charttype = settingsRef.current.charttype;
@@ -111,11 +111,11 @@ const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJS
 
     function renderAreachart() {
         const SortedData: dataAsJSONEntryType[] = sortByKey(dataAsJSON, xColumn);
-        const pathdata = Array.from(d3.group(SortedData, (d) => d));
+        const pathdata: PathDataEntryType[] = [{ key: "pathdata", values: SortedData }];
 
-        function sortByKey(array: dataAsJSONEntryType[], key: keyof dataAsJSONEntryType) {
-            const arrayCopy = JSON.parse(JSON.stringify(array));
-            return arrayCopy.sort(function(a: dataAsJSONEntryType, b: dataAsJSONEntryType) {
+        function sortByKey<T>(array: T[], key: keyof T): T[] {
+            const arrayCopy = JSON.parse(JSON.stringify(array)) as T[];
+            return arrayCopy.sort(function(a, b) {
                 var x = a[key]; var y = b[key];
                 return ((x < y) ? -1 : ((x > y) ? 1 : 0));
             });
@@ -138,7 +138,7 @@ const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJS
 
     function calcAbs() {
         const abs = d3.rollup(dataAsJSON, (d) => d.length, (d) => d[xColumn]);
-        const absArray = Array.from(abs, ([key, value]) => ({ key: String(key), value })).sort((a, b) => d3.ascending(b.value, a.value));
+        const absArray: BarchartDataEntryType[] = Array.from(abs, ([key, value]) => ({ key: String(key), value })).sort((a, b) => d3.ascending(b.value, a.value));
         return absArray
     }
 
