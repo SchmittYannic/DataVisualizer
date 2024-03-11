@@ -265,7 +265,7 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
     }, [catColumns, fileIsUploaded]);
 
     /* Creates a copy of dataAsJSON saved as dataCopy.
-    Creates a copy of dataColumn saved as dataOptions.
+    Creates a copy of dateColumns saved as dateOptions.
     Parses all the entries of the dateColumns into Date types
     to see if a column has indeed only dates inside.
     If an entry cant be parsed into a Date the column is removed from dateOptions */
@@ -290,9 +290,9 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
             let isDate = true;
             let invalidColumnIndex = [];
             for (let i = 0; i < dateColumns.length; i++){
-                d[dateColumns[i]] = Date.parse(d[dateColumns[i]]);
+                d[dateColumns[i]] = Date.parse(String(d[dateColumns[i]]));
                 
-                if(isNaN(d[dateColumns[i]])){
+                if(isNaN(Number(d[dateColumns[i]]))){
                     isDate = false;
                     invalidColumnIndex.push(i);
                 }
@@ -304,6 +304,9 @@ export const DataProvider = ({ children }: PropsWithChildren): ReactElement => {
                 }
             }
         });
+        console.log("json: ", dataAsJSON)
+        console.log("value: ", data[0]["date"])
+        console.log("type: ", typeof data[0]["date"])
 
         setDateOptions(dateOptions);
         setDateColumnsLength(dateOptions.length);
