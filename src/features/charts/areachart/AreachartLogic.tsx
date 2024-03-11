@@ -8,7 +8,7 @@ type AreachartLogicPropsType = {
     pathdata: [dataAsJSONEntryType, dataAsJSONEntryType[]][],
 }
 
-export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: AreachartLogicPropsType) => {
+export const areachart = (selection: any, props: AreachartLogicPropsType) => {
 	const { settingsRef, data, pathdata } = props;
 
     const { xColumn, yColumn } = settingsRef.current.dataInput;
@@ -64,8 +64,8 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         tooltipBgColor,
     } = settingsRef.current.tooltip;
 
-    const xValue = (d: dataAsJSONEntryType) => d[xColumn];
-    const yValue = (d: dataAsJSONEntryType) => d[yColumn];
+    const xValue = (d: dataAsJSONEntryType) => new Date(d[xColumn]);
+    const yValue = (d: dataAsJSONEntryType) => d[yColumn] as number;
 
     //select tooltipWrapper element on page
     const tooltipWrapper = d3.select('#chart-tt-wrapper');
@@ -115,8 +115,8 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .style('left', (event.pageX) + 'px')
             .style('top', (event.pageY) + 'px');
     }
-    function mousemoveDatapoint(event: MouseEvent){
-        var d: dataAsJSONEntryType = d3.select(this).data()[0];
+    function mousemoveDatapoint(this: SVGCircleElement, event: MouseEvent){
+        var d = d3.select(this).data()[0];
         var formatTime = d3.timeFormat("%H:%M %A %d.%m.%Y");
         var formated = formatTime(d[xColumn]);
         
@@ -133,17 +133,20 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
     const innerHeight = svgHeight - svgMarginTop - svgMarginBottom;
   
     const duration = 1000;
+
+    const minXValue = d3.min(data, xValue) as Date
+    const maxXValue = d3.max(data, xValue) as Date
   
     const xScale = d3.scaleTime()
-        .domain([d3.min(data, xValue), d3.max(data, xValue)])
+        .domain([minXValue, maxXValue])
         .range([0, innerWidth]);
   
     const yScale = d3.scaleLinear()
-        .domain([0, d3.max(data, yValue)])
+        .domain([0, d3.max(data, yValue) as number])
         .range([innerHeight, 0])
         .nice();
 
-    const background = selection.selectAll('.backgroundAreaChart').data([null]) as unknown as d3.Selection<SVGRectElement, null, d3.BaseType, unknown>;
+    const background = selection.selectAll('.backgroundAreaChart').data([null])
     background.enter().append('rect')
             .attr('class', 'backgroundAreaChart')
         .merge(background)
@@ -151,7 +154,7 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .attr("width", svgWidth)
             .attr("fill", `rgba(${svgBg.r}, ${svgBg.g}, ${svgBg.b}, ${svgBg.a})`);
   
-    const g = selection.selectAll('.containAreaChart').data([null]) as unknown as d3.Selection<SVGGElement, null, d3.BaseType, unknown>
+    const g = selection.selectAll('.containAreaChart').data([null])
     const gEnter = g.enter().append('g')
         .attr('class', 'containAreaChart');
   
@@ -160,13 +163,13 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .attr('transform', 
                 `translate(${svgMarginLeft},${svgMarginTop})`);
   
-    const axisTickFormat = (number: number) =>
+    const axisTickFormat = (number: d3.NumberValue) =>
         d3.format('~s')(number)
             .replace('G', ' Mrd.')
             .replace('M', ' Mio.')
             .replace('k', ' Tsd.');
   
-    const xAxis = d3.axisBottom(xScale)
+    const xAxis = d3.axisBottom<Date>(xScale)
         .tickFormat(d3.timeFormat("%d.%m.%Y"))
         .tickSize(-innerHeight)
         .tickPadding(20);
@@ -176,7 +179,7 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         .tickSize(-innerWidth)
         .tickPadding(10);
   
-    const yAxisG = g.select('.y-axis') as unknown as d3.Selection<SVGGElement, null, d3.BaseType, unknown>
+    const yAxisG = g.select('.y-axis')
     const yAxisGEnter= gEnter
         .append('g')
             .attr('class', 'y-axis');
@@ -279,7 +282,7 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .attr("font-family", fontFamily);
       
 	
-    const areaGenerator = d3.area()
+    const areaGenerator = d3.area<dataAsJSONEntryType>()
         .x(d => xScale(xValue(d)))
         .y0(innerHeight)
         .y1(d => yScale(yValue(d)));
@@ -287,7 +290,7 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         //.curve(curveBasis);
   
   
-    const areas = g.merge(gEnter).selectAll('.area-path').data(pathdata) as unknown as d3.Selection<SVGPathElement, [dataAsJSONEntryType, dataAsJSONEntryType[]], SVGGElement, null>
+    const areas = g.merge(gEnter).selectAll('.area-path').data(pathdata)
     areas.enter().append('path')
         .merge(areas)
             .attr('class', 'area-path')
@@ -304,7 +307,7 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         .x(d => xScale(xValue(d)))
         .y(d => yScale(yValue(d)));
 
-    const lines = g.merge(gEnter).selectAll('.line-path').data(pathdata) as unknown as d3.Selection<SVGPathElement, [dataAsJSONEntryType, dataAsJSONEntryType[]], SVGGElement, null>
+    const lines = g.merge(gEnter).selectAll('.line-path').data(pathdata)
     lines.enter().append('path')
             .attr('opacity', 0)
             .attr('fill', 'none') //muss bei Path gemacht werden sonst wird Path ausgefüllt
@@ -324,7 +327,7 @@ export const areachart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
 
     lines.exit().remove();
   
-    const circles = g.merge(gEnter).selectAll('circle').data(data) as unknown as d3.Selection<SVGCircleElement, dataAsJSONEntryType, d3.BaseType, unknown>;
+    const circles = g.merge(gEnter).selectAll('circle').data(data)
     circles.enter().append('circle')
             .attr("class", "circle")
             .attr('opacity', 0)
