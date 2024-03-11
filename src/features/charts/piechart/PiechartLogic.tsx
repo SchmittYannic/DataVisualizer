@@ -1,12 +1,13 @@
 import * as d3 from "d3";
-import { SettingsType } from "../../../utils/types";
+import { BarchartDataEntryType, SettingsType } from "../../../utils/types";
+import { MouseEvent } from "react";
 
 type PiechartLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
-    data: any[],
+    data: BarchartDataEntryType[],
 }
 
-export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: PiechartLogicPropsType) => {
+export const piechart = (selection: any, props: PiechartLogicPropsType) => {
     const { settingsRef, data } = props;
 
     //const { xColumn } = settingsRef.current.dataInput;
@@ -100,15 +101,17 @@ export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
         .style("border-radius", "8px")
         .style("pointer-events", "none")
         .style("transform", "translate(-100%, -100%)");
-    function mouseover(){
+    function mouseover(this: SVGPathElement){
         tooltip.style('visibility', 'visible');
         //gehovertes slice hervorheben
         d3.selectAll('.slice').attr('opacity', '0.7');
         d3.select(this).attr('opacity', '1');
     }
-    function mousemove(event){
-        let d = d3.select(this).data()[0]
+    function mousemove(this: SVGPathElement, event: MouseEvent){
+        let d = d3.select<SVGPathElement, d3.PieArcDatum<BarchartDataEntryType>>(this).data()[0]
+        console.log(d)
         let valuePercent = d.value / sum * 100;
+        console.log(d)
         tooltip
             .html(xaxisText + ': ' + d.data.key + '</br></br>'
                 + yaxisText + ': ' + Math.round((valuePercent + Number.EPSILON) * 100) / 100 + '%')
@@ -127,8 +130,8 @@ export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
     let colorScale = d3.scaleOrdinal(colorDict[`${colorscheme}`])
   	    .domain(data.map(d => d.key))
 	
-    let pie = d3.pie()
-        .value( d => d.value );
+    let pie = d3.pie<BarchartDataEntryType>()
+        .value( (d) => d.value );
         //nicht benötigt da Array bereits vorher sortiert wird
         //.sortValues(function(a, b) { return b - a; })
   
@@ -197,19 +200,19 @@ export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
   		.attr('transform',
             `translate(${innerWidth/ 2},${innerHeight / 2})`
            )
-    	.transition().delay(function(d,i) {
-					return i * 500; }).duration(500)
+    	.transition().delay(function(_d: d3.PieArcDatum<BarchartDataEntryType>, idx: number) {
+					return idx * 500; }).duration(500)
 			.attrTween('d', arcTween())
-  		.attr('fill', d => colorScale(d.data.key))
+  		.attr('fill', (d: d3.PieArcDatum<BarchartDataEntryType>) => colorScale(d.data.key))
   		.attr("opacity", 1);
   
     slices.exit().remove();
   
     // from http://bl.ocks.org/nadinesk/99393098950665c471e035ac517c2224
     function arcTween() {
-        return function(d) {
+        return function(d: d3.DefaultArcObject) {
             let interpolate = d3.interpolate(d.startAngle + 0.1, d.endAngle);
-                return function(t) {
+                return function(t: number) {
                     d.endAngle = interpolate(t);
                     return arc(d);
                 };
@@ -223,12 +226,12 @@ export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
             .attr('transform',
                 `translate(${innerWidth/ 2},${innerHeight / 2})`
             )
-            .transition().delay(function(d,i) {
-                        return i * 500; }).duration(500)
+            .transition().delay(function(_d: d3.DefaultArcObject, idx: number) {
+                        return idx * 500; }).duration(500)
             .attr("stroke", `rgba(${tickLineColor.r}, ${tickLineColor.g}, ${tickLineColor.b}, ${tickLineColor.a})`)
             .attr("stroke-width", tickLineWidth)
         .style("fill", "none")
-        .attr('points', function(d) {
+        .attr('points', function(d: d3.DefaultArcObject) {
             var posA = arc.centroid(d) // line insertion in the slice
             var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
             var posC = outerArc.centroid(d); // Label position = almost the same as posB
@@ -245,8 +248,8 @@ export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
   		.attr('opacity', '0')
   	.merge(sliceLabels)
   		.attr('class', 'sliceLabel')
-  		.text(d => d.data.key)
-  		    .attr('transform', function(d) {
+  		.text((d: d3.PieArcDatum<BarchartDataEntryType>) => d.data.key)
+  		    .attr('transform', function(d: d3.DefaultArcObject) {
                 var pos = outerArc.centroid(d);
                 var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
                 pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
@@ -255,7 +258,7 @@ export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
                     pos[1] = pos[1] + innerHeight/2
                 return 'translate(' + pos + ')';
             })
-            .attr('text-anchor', function(d) {
+            .attr('text-anchor', function(d: d3.DefaultArcObject) {
                 var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
                 return (midangle < Math.PI ? 'start' : 'end')
     	    })
@@ -263,13 +266,13 @@ export const piechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLEleme
             .attr("font-size", tickFontSize)
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
             .attr("font-family", fontFamily)
-            .attr("data-x", d => d.data.key)
-            .attr("data-y", d => {
+            .attr("data-x", (d: d3.PieArcDatum<BarchartDataEntryType>) => d.data.key)
+            .attr("data-y", (d: d3.PieArcDatum<BarchartDataEntryType>) => {
                 const valuePercent = d.value / sum * 100;
                 return Math.round((valuePercent + Number.EPSILON) * 100) / 100;
             })
-  		.transition().delay(function(d,i) {
-					return i * 500; }).duration(500)
+  		.transition().delay(function(_d: d3.PieArcDatum<BarchartDataEntryType>, idx: number) {
+					return idx * 500; }).duration(500)
   		.attr('opacity', '1');
   
     sliceLabels.exit().remove();
