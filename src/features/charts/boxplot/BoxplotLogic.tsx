@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { BoxplotDataEntryType, SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { BoxplotDataEntryType, OutlierDataEntryType, SettingsType } from "../../../utils/types";
 import { MouseEvent } from "react";
 
 type BoxplotLogicPropsType = {
@@ -496,30 +496,34 @@ export const boxplot = (selection: any, props: BoxplotLogicPropsType) => {
         }
     }
 
-    function createHighOutlierData(data: BoxplotDataEntryType[]){
-        let list = [];
+    const createHighOutlierData = (data: BoxplotDataEntryType[]): OutlierDataEntryType[] => {
+        let list: OutlierDataEntryType[] = [];
         for (let i = 0; i < data.length; i++){
             const highOutlierArray = data[i].value.highOutlier;
             if (!highOutlierArray) continue
             for (let j = 0; j < highOutlierArray.length; j++){
-                let e = {};
-                e['key'] = data[i].key;
-                e['value'] = highOutlierArray[j];
+                let e = {} as OutlierDataEntryType;
+                Object.assign(e, {
+                    "key": data[i].key,
+                    "value": highOutlierArray[j],
+                })
                 list.push(e);
             }
         }
         return list
     }
 
-    function createLowOutlierData(data: BoxplotDataEntryType[]){
-        let list = [];
+    const createLowOutlierData = (data: BoxplotDataEntryType[]): OutlierDataEntryType[] => {
+        let list: OutlierDataEntryType[] = [];
         for (let i = 0; i < data.length; i++){
             const lowOutlierArray = data[i].value.lowOutlier;
             if (!lowOutlierArray) continue
             for (let j = 0; j < lowOutlierArray.length; j++){
-                let e = {};
-                e['key'] = data[i].key;
-                e['value'] = lowOutlierArray[j];
+                let e = {} as OutlierDataEntryType;
+                Object.assign(e, {
+                    "key": data[i].key,
+                    "value": lowOutlierArray[j],
+                })
                 list.push(e);
             }
         }
@@ -538,11 +542,14 @@ export const boxplot = (selection: any, props: BoxplotLogicPropsType) => {
         .on('mouseout', mouseout)
             .style("stroke", outlierStrokeColor)
             .style("stroke-width", outlierStrokeWidth)
-            .style('fill', d => colorScale(d.key))
+            .style('fill', (d: OutlierDataEntryType) => colorScale(String(d.key)))
             .attr('r', 4)
-            .attr('cx', d => xScale(d.key) + xScale.bandwidth() / 2 - randomNumber())
-            .attr('cy', d => yScale(d.value))
-            .attr("data-y", d => Math.round((d.value + Number.EPSILON) * 100) / 100)
+            .attr('cx', (d: OutlierDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth() / 2 - randomNumber()
+            })
+            .attr('cy', (d: OutlierDataEntryType) => yScale(d.value))
+            .attr("data-y", (d: OutlierDataEntryType) => Math.round((d.value + Number.EPSILON) * 100) / 100)
         .transition()
         .duration(duration)
             .attr("opacity", 1);
@@ -558,11 +565,14 @@ export const boxplot = (selection: any, props: BoxplotLogicPropsType) => {
         .on('mouseout', mouseout)
             .style("stroke", "black")
             .style("stroke-width", outlierStrokeWidth)
-            .style('fill', d => colorScale(d.key))
+            .style('fill', (d: OutlierDataEntryType) => colorScale(String(d.key)))
             .attr('r', 4)
-            .attr('cx', d => xScale(d.key) + xScale.bandwidth() / 2 - randomNumber())
-            .attr('cy', d => yScale(d.value))
-            .attr("data-y", d => Math.round((d.value + Number.EPSILON) * 100) / 100)
+            .attr('cx', (d: OutlierDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth() / 2 - randomNumber()
+            })
+            .attr('cy', (d: OutlierDataEntryType) => yScale(d.value))
+            .attr("data-y", (d: OutlierDataEntryType) => Math.round((d.value + Number.EPSILON) * 100) / 100)
         .transition()
         .duration(duration)
             .attr("opacity", 1);
