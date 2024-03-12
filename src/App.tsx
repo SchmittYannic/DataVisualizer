@@ -37,17 +37,17 @@ const App = () => {
                     <Route path="/">
                         <Route index element={<Suspense><Homepage /></Suspense>} />
 
-                        <Route path="/DataVisualizer/UploadStep" element={
-                            <Suspense>
-                                <ProgressSteps />
-                                <UploadStep />
-                            </Suspense>
-                        } />
-
                         <Route path="/DataVisualizer/DataStep" element={
                             <Suspense>
                                 <ProgressSteps />
                                 <DataStep />
+                            </Suspense>
+                        } />
+
+                        <Route path="/DataVisualizer/UploadStep" element={
+                            <Suspense>
+                                <ProgressSteps />
+                                <UploadStep />
                             </Suspense>
                         } />
 
