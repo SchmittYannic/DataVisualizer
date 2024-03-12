@@ -5,7 +5,7 @@ import { MouseEvent } from "react";
 type LinechartLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
     data: dataAsJSONEntryType[],
-    pathdata: PathDataEntryType,
+    pathdata: PathDataEntryType[],
 }
 
 export const linechart = (selection: any, props: LinechartLogicPropsType) => {
