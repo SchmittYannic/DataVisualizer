@@ -235,9 +235,9 @@ export const barchart = (selection: any, props: BarchartLogicPropsType) => {
             .attr("font-family", fontFamily)
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
         .attr("dy", ".15em")
-            .attr("transform", function() {
+            .attr("transform", () => {
                     return "rotate(-30)" 
-                    });
+                });
   
     xAxisG
         .merge(xAxisGEnter)
@@ -317,8 +317,7 @@ export const barchart = (selection: any, props: BarchartLogicPropsType) => {
                 .merge(divergenceText)
                     .attr('x', (d: BarchartDataEntryType) => {
                         const xScaleValue = xScale(d.key);
-                        if (!xScaleValue) return 0
-                        return xScaleValue + xScale.bandwidth() / 2
+                        return Number(xScaleValue) + xScale.bandwidth() / 2
                     })
                     .attr('y', (d: BarchartDataEntryType) => yScale(d.value) - 5)
                     .attr('fill', `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
@@ -370,8 +369,7 @@ export const barchart = (selection: any, props: BarchartLogicPropsType) => {
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
             .attr('x', (d: BarchartDataEntryType) => {
                 const xScaleValue = xScale(d.key);
-                if (!xScaleValue) return 0
-                return xScaleValue + xScale.bandwidth() / 2
+                return Number(xScaleValue) + xScale.bandwidth() / 2
             })
             .attr('y', (d: BarchartDataEntryType) => yScale(d.value) - 5)
         .text( (d: BarchartDataEntryType) => `${d.value}`);
