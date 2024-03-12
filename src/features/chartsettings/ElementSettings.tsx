@@ -8,7 +8,7 @@ import MyColorPicker from "../../components/ui/MyColorPicker";
 import Dropdown from "../../components/ui/Dropdown";
 import renderChart from "../charts/renderChart";
 import { colorSchemeOptions } from "../../constants";
-import { SettingsType } from "../../utils/types";
+import { ColorschemeType, SettingsType } from "../../utils/types";
 
 type ElementSettingsPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
@@ -84,7 +84,7 @@ const ElementSettings = ({
                         <Dropdown
                             OptionsList={colorSchemeOptions}
                             selectedOption={settings.chartelements.colorscheme}
-                            setSelectedOption={(input: string) => {
+                            setSelectedOption={(input: ColorschemeType) => {
                                 const newRef = { ...settingsRef.current };
                                 newRef.chartelements.colorscheme = input;
         

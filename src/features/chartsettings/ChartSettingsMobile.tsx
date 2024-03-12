@@ -5,7 +5,7 @@ import { useAnimate, stagger } from "framer-motion";
 import useData from "../../hooks/useData";
 import ChartSettings from "./ChartSettings";
 import { navigationTabName } from "../../constants";
-import { ChartType, SettingsDimensionsType, SettingsType } from "../../utils/types";
+import { ChartType, SettingsDimensionsType, SettingsTabType, SettingsType } from "../../utils/types";
 
 type ChartSettingsMobilePropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
@@ -21,8 +21,8 @@ const ChartSettingsMobile = ({
 
     const { dataAsJSONLength } = useData();
     
-    const [menuIsOpen, setMenuIsOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState(navigationTabName);
+    const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<SettingsTabType>(navigationTabName);
     const [scope, animate] = useAnimate();
 
     const handleExpandableSideMenuTriggerClick = () => {
