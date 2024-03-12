@@ -11,7 +11,7 @@ type ColorlegendPropsType = {
     labelFont: string,
 }
 
-const colorlegend = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: ColorlegendPropsType) => {
+const colorlegend = (selection: any, props: ColorlegendPropsType) => {
     const {
         colorScale,
         positionX,
@@ -62,7 +62,7 @@ const colorlegend = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, 
             .attr("class", "tick");
     ticksEnter
         .merge(ticks)
-            .attr("transform", (d, i) => `translate(0, ${i * tickSpacing})`);
+            .attr("transform", (_d: string, i: number) => `translate(0, ${i * tickSpacing})`);
     ticks.exit().remove();
     
     ticksEnter
@@ -83,7 +83,7 @@ const colorlegend = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, 
             .attr("x", tickRadius + tickPadding)
             .attr('y', 3) // TickLabelYPosition
             .attr("font-family", labelFont)
-        .text(d => d)
+        .text((d: string) => d)
             .transition().duration(2500)
             .attr('opacity', '1');
 };
