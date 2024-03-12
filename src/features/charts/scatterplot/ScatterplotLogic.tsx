@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import colorlegend from "./colorlegend";
 import { SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { MouseEvent } from "react";
 
 type ScatterplotLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
@@ -8,7 +9,7 @@ type ScatterplotLogicPropsType = {
     placeholderString: string,
 }
 
-export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: ScatterplotLogicPropsType) => {
+export const scatterplot = (selection: any, props: ScatterplotLogicPropsType) => {
     const { settingsRef, data, placeholderString } = props;
 
     const { xColumn, yColumn, zGrouping } = settingsRef.current.dataInput;
@@ -74,9 +75,9 @@ export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLEl
         "tableau10": d3.schemeTableau10,
     }
 
-    const xValue = d => d[xColumn];
-    const yValue = d => d[yColumn];
-    const colorValue = d => d[zGrouping];
+    const xValue = (d: dataAsJSONEntryType) => d[xColumn] as number;
+    const yValue = (d: dataAsJSONEntryType) => d[yColumn] as number;
+    const colorValue = (d: dataAsJSONEntryType) => d[zGrouping];
   
     ////////////////////////////////////////////////////////////////
     ///////////////////////////Tooltip//////////////////////////////
@@ -116,8 +117,8 @@ export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLEl
     function mouseover(){
         tooltip.style('visibility', 'visible');
     }
-    function mousemove(event){
-        let d = d3.select(this).data()[0]
+    function mousemove(this: SVGCircleElement, event: MouseEvent){
+        let d = d3.select<SVGCircleElement, dataAsJSONEntryType>(this).data()[0]
     
         if (zGrouping === placeholderString) {
             tooltip
@@ -142,13 +143,20 @@ export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLEl
     const innerWidth = svgWidth - svgMarginLeft - svgMarginRight;
     const innerHeight = svgHeight - svgMarginTop - svgMarginBottom;
     //x, y und colorScale
+
+    const minXValue = d3.min(data, xValue) as number
+    const maxXValue = d3.max(data, xValue) as number
+
     const xScale = d3.scaleLinear()
-        .domain(d3.extent(data, xValue))
+        .domain([minXValue, maxXValue])
         .range([0, innerWidth])
         .nice();
+
+    const minYValue = d3.min(data, yValue) as number
+    const maxYValue = d3.max(data, yValue) as number
   
     const yScale = d3.scaleLinear()
-        .domain(d3.extent(data, yValue))
+        .domain([minYValue, maxYValue])
             .range([innerHeight, 0])
         .nice();
   
@@ -172,7 +180,7 @@ export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLEl
                 `translate(${svgMarginLeft},${svgMarginTop})`
             );
     //custom Format für Achsen
-    const formatLarge = number =>
+    const formatLarge = (number: d3.NumberValue) =>
         d3.format('~s')(number)
             .replace('G', ' Mrd.')
             .replace('M', ' Mio.')
@@ -180,8 +188,8 @@ export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLEl
   
     const formatSmall = d3.format('~f');
 
-    let customFormat = function(val) { 
-        return Math.abs(val) < 1 ? formatSmall(val) : formatLarge(val);
+    let customFormat = (val: d3.NumberValue) => { 
+        return Math.abs(val.valueOf()) < 1 ? formatSmall(val) : formatLarge(val);
     };
     //Erstellung und Hinzufügen der Achsen und Achsenbeschreibung
     const xAxis = d3.axisBottom(xScale)
@@ -254,7 +262,7 @@ export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLEl
             .style('text-anchor', 'end')
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
-            .attr("transform", function(d) {
+            .attr("transform", () => {
                 return "rotate(-30)" 
             })
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
@@ -341,12 +349,12 @@ export const scatterplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLEl
     .on('mouseout', mouseout)
   	.transition().duration(1000)
   	//.delay((d, i) => i * 5)
-  		.attr('fill', d => colorScale(colorValue(d)))
-  		.attr('cy', d => yScale(yValue(d)))
-		.attr('cx', d => xScale(xValue(d)))
-        .attr("data-x", d => d[xColumn])
-        .attr("data-y", d => d[yColumn])
-        .attr("data-z", d => d[zGrouping])
+  		.attr('fill', (d: dataAsJSONEntryType) => colorScale(String(colorValue(d))))
+  		.attr('cy', (d: dataAsJSONEntryType) => yScale(yValue(d)))
+		.attr('cx', (d: dataAsJSONEntryType) => xScale(xValue(d)))
+        .attr("data-x", (d: dataAsJSONEntryType) => d[xColumn])
+        .attr("data-y", (d: dataAsJSONEntryType) => d[yColumn])
+        .attr("data-z", (d: dataAsJSONEntryType) => d[zGrouping])
   		.attr('r', circleRadius)
         .attr('opacity', circleOpacity)
     circles.exit().remove()
