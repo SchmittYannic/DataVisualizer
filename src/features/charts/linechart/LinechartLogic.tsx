@@ -1,13 +1,14 @@
 import * as d3 from "d3";
-import { SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { PathDataEntryType, SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { MouseEvent } from "react";
 
 type LinechartLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
     data: dataAsJSONEntryType[],
-    pathdata: [dataAsJSONEntryType, dataAsJSONEntryType[]][],
+    pathdata: PathDataEntryType,
 }
 
-export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: LinechartLogicPropsType) => {
+export const linechart = (selection: any, props: LinechartLogicPropsType) => {
 	const { settingsRef, data, pathdata } = props;
 
     const { xColumn, yColumn } = settingsRef.current.dataInput;
@@ -62,8 +63,8 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         tooltipBgColor,
     } = settingsRef.current.tooltip;
 
-    const xValue = d => d[xColumn];
-    const yValue = d => d[yColumn];
+    const xValue = (d: dataAsJSONEntryType) => new Date(d[xColumn]);
+    const yValue = (d: dataAsJSONEntryType) => d[yColumn] as number;
 
     //select tooltipWrapper element on page
     const tooltipWrapper = d3.select('#chart-tt-wrapper');
@@ -100,7 +101,7 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
     function mouseover(){
         tooltip.style('visibility', 'visible');
     }
-    function mousemove(event){
+    function mousemove(event: MouseEvent){
         var x0 = xScale.invert(d3.pointer(event)[0]);
         var formatTime = d3.timeFormat("%H:%M %A %d.%m.%Y");
         var x0formated = formatTime(x0);
@@ -113,10 +114,10 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .style('left', (event.pageX) + 'px')
             .style('top', (event.pageY) + 'px');
     }
-    function mousemoveDatapoint(event){
-        var d = d3.select(this).data()[0];
+    function mousemoveDatapoint(this: SVGCircleElement, event: MouseEvent){
+        var d = d3.select<SVGCircleElement, dataAsJSONEntryType>(this).data()[0];
         var formatTime = d3.timeFormat("%H:%M %A %d.%m.%Y");
-        var formated = formatTime(d[xColumn]);
+        var formated = formatTime(new Date(d[xColumn]));
         
         tooltip
             .html('<b><u>Datenpunkt</u></b> </br>' + yaxisText + ': ' + d[yColumn] + '</br></br>' + xaxisText + ': ' + formated)
@@ -131,14 +132,20 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
     const innerHeight = svgHeight - svgMarginTop - svgMarginBottom;
   
     const duration = 1000;
+
+    const minXValue = d3.min(data, xValue) as Date
+    const maxXValue = d3.max(data, xValue) as Date
   
     const xScale = d3.scaleTime()
-        .domain(d3.extent(data, xValue))
+        .domain([minXValue, maxXValue])
         .range([0, innerWidth]);
         //.nice();
+
+    const minYValue = d3.min(data, yValue) as number
+    const maxYValue = d3.max(data, yValue) as number
   
     const yScale = d3.scaleLinear()
-        .domain(d3.extent(data, yValue))
+        .domain([minYValue, maxYValue])
         .range([innerHeight, 0])
         .nice();
 
@@ -159,13 +166,13 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .attr('transform', 
                 `translate(${svgMarginLeft},${svgMarginTop})`);
   
-    const axisTickFormat = number =>
+    const axisTickFormat = (number: d3.NumberValue) =>
         d3.format('~s')(number)
             .replace('G', ' Mrd.')
             .replace('M', ' Mio.')
             .replace('k', ' Tsd.');
   
-    const xAxis = d3.axisBottom(xScale)
+    const xAxis = d3.axisBottom<Date>(xScale)
         .tickFormat(d3.timeFormat("%d.%m.%Y"))
         .tickSize(-innerHeight)
         .tickPadding(20);
@@ -237,7 +244,7 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .style('text-anchor', 'end')
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
-            .attr("transform", function(d) {
+            .attr("transform", () => {
                 return "rotate(-30)" 
             })
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
@@ -278,7 +285,7 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .attr("font-family", fontFamily);
 
 	
-    const lineGenerator = d3.line()
+    const lineGenerator = d3.line<dataAsJSONEntryType>()
         .x(d => xScale(xValue(d)))
         .y(d => yScale(yValue(d)));
         //nicht verwenden, da linie nicht mehr durch Datenpunkte verläuft
@@ -300,7 +307,7 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
             .attr("stroke", `rgba(${lineColor.r}, ${lineColor.g}, ${lineColor.b}, ${lineColor.a})`)
             .call(lineTransition)
             .attr('opacity', 1)
-            .attr('d', d => lineGenerator(d.values));
+            .attr('d', (d: PathDataEntryType) => lineGenerator(d.values));
   		
     lines.exit().remove();
   
@@ -312,13 +319,13 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
         .on('mouseover', mouseover)
         .on('mousemove', mousemoveDatapoint)
         .on('mouseout', mouseout)
-            .attr('cy', d => yScale(yValue(d)))
-            .attr('cx', d => xScale(xValue(d)))
-            .attr('data-x', d => {
+            .attr('cy', (d: dataAsJSONEntryType) => yScale(yValue(d)))
+            .attr('cx', (d: dataAsJSONEntryType) => xScale(xValue(d)))
+            .attr('data-x', (d: dataAsJSONEntryType) => {
                 var formatTime = d3.timeFormat("%H:%M %A %d.%m.%Y");
-                return formatTime(d[xColumn]);
+                return formatTime(new Date(d[xColumn]));
             })
-            .attr('data-y', d => d[yColumn])
+            .attr('data-y', (d: dataAsJSONEntryType) => d[yColumn])
             .attr('r', circleRadius)
             .attr("fill", `rgb(${pointColor.r}, ${pointColor.g}, ${pointColor.b})`)
             .transition().duration(duration)
@@ -332,16 +339,15 @@ export const linechart = (selection: d3.Selection<d3.BaseType, unknown, HTMLElem
   
     // Von https://bl.ocks.org/mbostock/5649592
     // und https://bl.ocks.org/pjsier/28d1d410b64dcd74d9dab348514ed256
-    function lineTransition(path) {
+    function lineTransition(path: d3.Selection<SVGPathElement, unknown, HTMLElement, any>) {
         path.transition()
             .duration(duration * 2)
             .attrTween("stroke-dasharray", tweenDash);
     };
-    function tweenDash() {
-            var l = this.getTotalLength(),
-                i = d3.interpolateString("0," + l, l + "," + l);
-            return function (t) { return i(t);
-        }
+    function tweenDash(this: SVGPathElement) {
+        const l = this.getTotalLength();
+        const interpolate = d3.interpolateString("0," + l, l + "," + l);
+        return (t: number) => interpolate(t);
     };
 };
 
