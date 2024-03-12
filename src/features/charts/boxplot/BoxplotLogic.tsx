@@ -1,12 +1,13 @@
 import * as d3 from "d3";
-import { SettingsType } from "../../../utils/types";
+import { BoxplotDataEntryType, SettingsType, dataAsJSONEntryType } from "../../../utils/types";
+import { MouseEvent } from "react";
 
 type BoxplotLogicPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
-    data: any[],
+    data: BoxplotDataEntryType[],
 }
 
-export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElement, any>, props: BoxplotLogicPropsType) => {
+export const boxplot = (selection: any, props: BoxplotLogicPropsType) => {
 	const { settingsRef, data } = props;
 
     //const { xColumn, zGrouping } = settingsRef.current.dataInput;
@@ -108,23 +109,32 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         .style("pointer-events", "none")
         .style("transform", "translate(-100%, -100%)");
   
-    function mouseover(){
+    function mouseover(this: SVGCircleElement | SVGRectElement){
         tooltip.style('visibility', 'visible');
         d3.selectAll('.iqr').attr('opacity', '0.7');
         d3.selectAll('.highOutlier').attr('opacity', '0.7');
         d3.selectAll('.lowOutlier').attr('opacity', '0.7');
         d3.select(this).attr('opacity', '1');
     }
-    function mousemoveIqr(event){
-        let d = d3.select(this).data()[0];
+    function mousemoveIqr(this: SVGRectElement, event: MouseEvent){
+        let d = d3.select<SVGRectElement, BoxplotDataEntryType>(this).data()[0];
+
+        const max = d.value.max ? Math.round((d.value.max + Number.EPSILON) * 100) / 100 : "";
+        const q3 = d.value.q3 ? Math.round((d.value.q3 + Number.EPSILON) * 100) / 100 : "";
+        const median = d.value.median ? Math.round((d.value.median + Number.EPSILON) * 100) / 100 : "";
+        const q1 = d.value.q1 ? Math.round((d.value.q1 + Number.EPSILON) * 100) / 100 : "";
+        const min = d.value.min ? Math.round((d.value.min + Number.EPSILON) * 100) / 100 : "";
+        const skewness = d.value.skewness ? Math.round((d.value.skewness + Number.EPSILON) * 100) / 100 : "";
+        const kurtosis = d.value.kurtosis ? Math.round((d.value.kurtosis + Number.EPSILON) * 100) / 100 : "";
+
         tooltip
-            .html('Maximum: ' + Math.round((d.value.max + Number.EPSILON) * 100) / 100 + '</br>' +
-                '3.Quantil: ' + Math.round((d.value.q3 + Number.EPSILON) * 100) / 100 + '</br>' +
-                'Median: ' + Math.round((d.value.median + Number.EPSILON) * 100) / 100 + '</br>' +
-                '1.Quantil: ' + Math.round((d.value.q1 + Number.EPSILON) * 100) / 100 + '</br>' +
-                'Minimum: ' + Math.round((d.value.min + Number.EPSILON) * 100) / 100 + '</br>' +
-                'Schiefe: ' + Math.round((d.value.skewness + Number.EPSILON) * 100) / 100 + '</br>' +
-                'Wölbung: ' + Math.round((d.value.kurtosis + Number.EPSILON) * 100) / 100)
+            .html('Maximum: ' + max + '</br>' +
+                '3.Quantil: ' + q3 + '</br>' +
+                'Median: ' + median + '</br>' +
+                '1.Quantil: ' + q1 + '</br>' +
+                'Minimum: ' + min + '</br>' +
+                'Schiefe: ' + skewness + '</br>' +
+                'Wölbung: ' + kurtosis)
             .style('left', (event.pageX) + 'px')
             .style('top', (event.pageY) + 'px');
     }
@@ -135,8 +145,8 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         d3.selectAll('.lowOutlier').attr('opacity', '1');
     }
 
-    function mousemoveCircle(event){
-        let d = yScale.invert(d3.select(this).attr('cy'));
+    function mousemoveCircle(this: SVGCircleElement, event: MouseEvent){
+        let d = yScale.invert(Number(d3.select(this).attr('cy')));
         
         tooltip
             .html('Ausreißer: ' + Math.round((d + Number.EPSILON) * 100) / 100)
@@ -150,21 +160,23 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
   
     const duration = 1000;
   
-    const arrayOfMinimum = data.map(d => d.value.min);
-    const arrayOfMaximum = data.map(d => d.value.max);
+    const arrayOfMinimum = data.map(d => d.value.min as number);
+    const arrayOfMaximum = data.map(d => d.value.max as number);
+    const minYValue = d3.min(arrayOfMinimum) as number;
+    const maxYValue = d3.max(arrayOfMaximum) as number;
   
     const yScale = d3.scaleLinear()
         .range([innerHeight, 0])
-        .domain([d3.min(arrayOfMinimum), d3.max(arrayOfMaximum)])
+        .domain([minYValue, maxYValue])
         .nice();
 
     const xScale = d3.scaleBand()
         .range([0, innerWidth])
-        .domain(data.map(d => d.key))
+        .domain(data.map(d => String(d.key)))
         .padding(0.6);
   
     const colorScale = d3.scaleOrdinal(colorDict[`${colorscheme}`])
-        .domain(data.map(d => d.key));
+        .domain(data.map(d => String(d.key)));
 
     const background = selection.selectAll('.backgroundBoxplot').data([null]);
     background.enter().append('rect')
@@ -184,16 +196,16 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
                 `translate(${svgMarginLeft},${svgMarginTop})`
             );
 
-    const formatLarge = d =>
-        d3.format('~s')(d)
+    const formatLarge = (number: d3.NumberValue) =>
+        d3.format('~s')(number)
         .replace('G', ' Mrd.')
         .replace('M', ' Mio.')
         .replace('k', ' Tsd.');
          
     const formatSmall = d3.format('~f');
        
-    let customFormat = function(d) { 
-        return Math.abs(d) < 1 ? formatSmall(d) : formatLarge(d);
+    let customFormat = (val: d3.NumberValue) => { 
+        return Math.abs(val.valueOf()) < 1 ? formatSmall(val) : formatLarge(val);
     };
   
     const xAxis = d3.axisBottom(xScale)
@@ -264,7 +276,7 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
             .attr("font-size", tickFontSize)
             .attr("font-family", fontFamily)
         .attr("dy", ".15em")
-            .attr("transform", function(d) {
+            .attr("transform", () => {
                     return "rotate(-30)" 
                 });
   
@@ -316,23 +328,23 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         .on('mouseout', mouseout)
             .attr('class', 'iqr')
             .attr('rx', '5')
-            .attr('fill', d => colorScale(d.key))
-            .attr('x', d => xScale(d.key))
-            .attr('y', d => yScale(d.value.q3))
-            .attr("data-maximum", d => Math.round((d.value.max + Number.EPSILON) * 100) / 100)
-            .attr("data-quantil3", d => Math.round((d.value.q3 + Number.EPSILON) * 100) / 100)
-            .attr("data-median", d => Math.round((d.value.median + Number.EPSILON) * 100) / 100)
-            .attr("data-quantil1", d => Math.round((d.value.q1 + Number.EPSILON) * 100) / 100)
-            .attr("data-minimum", d => Math.round((d.value.min + Number.EPSILON) * 100) / 100)
-            .attr("data-skewness", d => Math.round((d.value.skewness + Number.EPSILON) * 100) / 100)
-            .attr("data-kurtosis", d => Math.round((d.value.kurtosis + Number.EPSILON) * 100) / 100)
+            .attr('fill', (d: BoxplotDataEntryType) => colorScale(String(d.key)))
+            .attr('x', (d: BoxplotDataEntryType) => xScale(String(d.key)))
+            .attr('y', (d: BoxplotDataEntryType) => yScale(Number(d.value.q3)))
+            .attr("data-maximum", (d: BoxplotDataEntryType) => Math.round((Number(d.value.max) + Number.EPSILON) * 100) / 100)
+            .attr("data-quantil3", (d: BoxplotDataEntryType) => Math.round((Number(d.value.q3) + Number.EPSILON) * 100) / 100)
+            .attr("data-median", (d: BoxplotDataEntryType) => Math.round((Number(d.value.median) + Number.EPSILON) * 100) / 100)
+            .attr("data-quantil1", (d: BoxplotDataEntryType) => Math.round((Number(d.value.q1) + Number.EPSILON) * 100) / 100)
+            .attr("data-minimum", (d: BoxplotDataEntryType) => Math.round((Number(d.value.min) + Number.EPSILON) * 100) / 100)
+            .attr("data-skewness", (d: BoxplotDataEntryType) => Math.round((Number(d.value.skewness) + Number.EPSILON) * 100) / 100)
+            .attr("data-kurtosis", (d: BoxplotDataEntryType) => Math.round((Number(d.value.kurtosis) + Number.EPSILON) * 100) / 100)
             .attr('width', xScale.bandwidth())
             .attr("stroke-width", iqrStrokeWidth)
             .attr("stroke", iqrStrokeColor)
         //Höhe darf nicht durch innerHeight - yScale(d.iqr) berechnet werden
         //da es ansonsten zu bugs kommt, wenn iqr kleiner ist als das
         //Minimum der Skalar. Genauer gesagt wird in diesem Fall die Höhe negativ.
-        .attr('height', d => yScale(d.value.q1) - yScale(d.value.q3))
+        .attr('height', (d: BoxplotDataEntryType) => yScale(Number(d.value.q1)) - yScale(Number(d.value.q3)))
             .transition().duration(duration)
             .attr('opacity', 1);
     rectangles.exit().remove();
@@ -342,10 +354,13 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         .merge(medianLine)
             .attr('class', 'medianLine')
             .style('stroke', 'black')
-            .attr('x1', d => xScale(d.key))
-            .attr('x2', d => xScale(d.key) + xScale.bandwidth())
-            .attr('y1', d => yScale(d.value.median))
-            .attr('y2', d => yScale(d.value.median))
+            .attr('x1', (d: BoxplotDataEntryType) => xScale(String(d.key)))
+            .attr('x2', (d: BoxplotDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth()
+            })
+            .attr('y1', (d: BoxplotDataEntryType) => yScale(Number(d.value.median)))
+            .attr('y2', (d: BoxplotDataEntryType) => yScale(Number(d.value.median)))
             .transition().duration(duration)
             .attr('opacity', 1);
     medianLine.exit().remove();
@@ -356,10 +371,19 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         .merge(upperWhiskerHor)
             .attr('class', 'upperWhiskerHor')
             .style('stroke', 'black')
-            .attr('x1', d => xScale(d.key))
-            .attr('x2', d => xScale(d.key) + xScale.bandwidth())
-            .attr('y1', d => yScale(d3.min([d.value.max, d.value.upperIqr])))
-            .attr('y2', d => yScale(d3.min([d.value.max, d.value.upperIqr])))
+            .attr('x1', (d: BoxplotDataEntryType) => xScale(String(d.key)))
+            .attr('x2', (d: BoxplotDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth()
+            })
+            .attr('y1', (d: BoxplotDataEntryType) => {
+                const yScaleValue = d3.min([Number(d.value.max), Number(d.value.upperIqr)])
+                return yScale(Number(yScaleValue))
+            })
+            .attr('y2', (d: BoxplotDataEntryType) => {
+                const yScaleValue = d3.min([Number(d.value.max), Number(d.value.upperIqr)])
+                return yScale(Number(yScaleValue))
+            })
             .transition().duration(duration)
             .attr('opacity', 1);
     upperWhiskerHor.exit().remove();
@@ -369,10 +393,19 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         .merge(lowerWhiskerHor)
             .attr('class', 'lowerWhiskerHor')
             .style('stroke', 'black')
-            .attr('x1', d => xScale(d.key))
-            .attr('x2', d => xScale(d.key) + xScale.bandwidth())
-            .attr('y1', d => yScale(d3.max([d.value.min, d.value.lowerIqr])))
-            .attr('y2', d => yScale(d3.max([d.value.min, d.value.lowerIqr])))
+            .attr('x1', (d: BoxplotDataEntryType) => xScale(String(d.key)))
+            .attr('x2', (d: BoxplotDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth()
+            })
+            .attr('y1', (d: BoxplotDataEntryType) => {
+                const yScaleValue = d3.max([Number(d.value.min), Number(d.value.lowerIqr)])
+                return yScale(Number(yScaleValue))
+            })
+            .attr('y2', (d: BoxplotDataEntryType) => {
+                const yScaleValue = d3.max([Number(d.value.min), Number(d.value.lowerIqr)])
+                return yScale(Number(yScaleValue))
+            })
             .transition().duration(duration)
             .attr('opacity', 1);
     lowerWhiskerHor.exit().remove();
@@ -382,10 +415,19 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         .merge(upperWhiskerVert)
             .attr('class', 'upperWhiskerVert')
             .style('stroke', 'black')
-            .attr('x1', d => xScale(d.key) + xScale.bandwidth() / 2)
-            .attr('x2', d => xScale(d.key) + xScale.bandwidth() / 2)
-            .attr('y1', d => yScale(d.value.q3))
-            .attr('y2', d => yScale(d3.min([d.value.max, d.value.upperIqr])))
+            .attr('x1', (d: BoxplotDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth() / 2
+            })
+            .attr('x2', (d: BoxplotDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth() / 2
+            })
+            .attr('y1', (d: BoxplotDataEntryType) => yScale(Number(d.value.q3)))
+            .attr('y2', (d: BoxplotDataEntryType) => {
+                const yScaleValue = d3.min([Number(d.value.max), Number(d.value.upperIqr)])
+                return yScale(Number(yScaleValue))
+            })
             .transition().duration(duration)
             .attr('opacity', 1);
     upperWhiskerVert.exit().remove();
@@ -395,10 +437,19 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         .merge(lowerWhiskerVert)
             .attr('class', 'lowerWhiskerVert')
             .style('stroke', 'black')
-            .attr('x1', d => xScale(d.key) + xScale.bandwidth() / 2)
-            .attr('x2', d => xScale(d.key) + xScale.bandwidth() / 2)
-            .attr('y1', d => yScale(d.value.q1))
-            .attr('y2', d => yScale(d3.max([d.value.min, d.value.lowerIqr])))
+            .attr('x1', (d: BoxplotDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth() / 2
+            })
+            .attr('x2', (d: BoxplotDataEntryType) => {
+                const xScaleValue = xScale(String(d.key))
+                return Number(xScaleValue) + xScale.bandwidth() / 2
+            })
+            .attr('y1', (d: BoxplotDataEntryType) => yScale(Number(d.value.q1)))
+            .attr('y2', (d: BoxplotDataEntryType) => {
+                const yScaleValue = d3.max([Number(d.value.min), Number(d.value.lowerIqr)])
+                return yScale(Number(yScaleValue))
+            })
             .transition().duration(duration)
             .attr('opacity', 1);
     lowerWhiskerVert.exit().remove();
@@ -419,7 +470,7 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         return randomNumber
     }
 
-    function cyrb128(str) {
+    function cyrb128(str: string) {
         let h1 = 1779033703, h2 = 3144134277,
             h3 = 1013904242, h4 = 2773480762;
         for (let i = 0, k; i < str.length; i++) {
@@ -436,7 +487,7 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         return [(h1^h2^h3^h4)>>>0, (h2^h1)>>>0, (h3^h1)>>>0, (h4^h1)>>>0];
     }
 
-    function mulberry32(a) {
+    function mulberry32(a: any) {
         return function() {
           var t = a += 0x6D2B79F5;
           t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -445,26 +496,30 @@ export const boxplot = (selection: d3.Selection<d3.BaseType, unknown, HTMLElemen
         }
     }
 
-    function createHighOutlierData(data){
+    function createHighOutlierData(data: BoxplotDataEntryType[]){
         let list = [];
         for (let i = 0; i < data.length; i++){
-            for (let j = 0; j < data[i].value.highOutlier.length; j++){
+            const highOutlierArray = data[i].value.highOutlier;
+            if (!highOutlierArray) continue
+            for (let j = 0; j < highOutlierArray.length; j++){
                 let e = {};
                 e['key'] = data[i].key;
-                e['value'] = data[i].value.highOutlier[j];
+                e['value'] = highOutlierArray[j];
                 list.push(e);
             }
         }
         return list
     }
 
-    function createLowOutlierData(data){
+    function createLowOutlierData(data: BoxplotDataEntryType[]){
         let list = [];
         for (let i = 0; i < data.length; i++){
-            for (let j = 0; j < data[i].value.lowOutlier.length; j++){
+            const lowOutlierArray = data[i].value.lowOutlier;
+            if (!lowOutlierArray) continue
+            for (let j = 0; j < lowOutlierArray.length; j++){
                 let e = {};
                 e['key'] = data[i].key;
-                e['value'] = data[i].value.lowOutlier[j];
+                e['value'] = lowOutlierArray[j];
                 list.push(e);
             }
         }
