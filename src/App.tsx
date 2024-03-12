@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 
 const Homepage = lazy(() => import("./components/Homepage" /* webpackChunkName: "Homepage" */));
@@ -34,15 +34,21 @@ const App = () => {
         <Router>
             <ScrollToTop>
                 <Routes>
-                    <Route path="/*" element={<Suspense><Homepage /></Suspense>}/>
-                    {steps.map((step, idx) => (
-                        <Route key={idx} path={step.path} element={
-                            <Suspense>
-                                <ProgressSteps />
-                                <step.component />
-                            </Suspense>
-                        }/>
-                    ))}
+                    <Route path="/">
+                        <Route index element={<Suspense><Homepage /></Suspense>} />
+
+                        {steps.map((step, idx) => (
+                            <Route key={idx} path={step.path} element={
+                                <Suspense>
+                                    <ProgressSteps />
+                                    <step.component />
+                                </Suspense>
+                            }/>
+                        ))}
+                    </Route>
+
+                    {/* if route doesnt exist redirect back to frontpage */}
+                    <Route path="*" element={ <Navigate to="/" /> }/>
                 </Routes>
             </ScrollToTop>
         </Router>
