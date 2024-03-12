@@ -22,3 +22,7 @@ export const isHTMLButtonElement = (obj: any): obj is HTMLButtonElement => {
 export const isSVGElement = (obj: any): obj is SVGElement => {
     return obj instanceof SVGElement;
 }
+
+export const isNumberArray = (value: any): value is number[] => {
+    return Array.isArray(value) && value.every((num) => typeof num === 'number');
+}
