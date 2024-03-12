@@ -78,7 +78,7 @@ Installs all required npm packages
 $ npm run dev
 ```
 
-Runs the app in the development mode. See console for exact address. Defaults to [http://localhost:3000](http://localhost:3000).
+Runs the app in the development mode. See console for exact address. Defaults to [http://localhost:5173/](http://localhost:5173/).
 
 The page will reload when you make changes. You may also see any lint errors in the console.
 
