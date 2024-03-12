@@ -284,16 +284,9 @@ export const histogram = (selection: any, props: HistogramLogicPropsType) => {
         .on('mouseover', mouseover)
         .on('mousemove', mousemove)
         .on('mouseout', mouseout)
-            .attr("x", (d: d3.Bin<dataAsJSONEntryType, number>) => {
-                if (!d.x0) return 0
-                return xScale(d.x0) + 5
-            })
+            .attr("x", (d: d3.Bin<dataAsJSONEntryType, number>) => xScale(Number(d.x0)) + 5)
             .attr("y", (d: d3.Bin<dataAsJSONEntryType, number>) => yScale(d.length))
-            .attr("width", (d: d3.Bin<dataAsJSONEntryType, number>) => {
-                if (!d.x0) return 0
-                if (!d.x1) return 0
-                return Math.max(0, xScale(d.x1) - xScale(d.x0) - 10)
-            })
+            .attr("width", (d: d3.Bin<dataAsJSONEntryType, number>) => Math.max(0, xScale(Number(d.x1)) - xScale(Number(d.x0)) - 10))
             .attr("height", (d: d3.Bin<dataAsJSONEntryType, number>) => yScale(0) - yScale(d.length))
             .attr("data-x0", (d: d3.Bin<dataAsJSONEntryType, number>) => d.x0)
             .attr("data-x1", (d: d3.Bin<dataAsJSONEntryType, number>) => d.x1)
