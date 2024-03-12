@@ -241,7 +241,7 @@ export const areachart = (selection: any, props: AreachartLogicPropsType) => {
             .style('text-anchor', 'end')
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
-            .attr("transform", function() {
+            .attr("transform", () => {
                 return "rotate(-30)" 
             })
             .attr("fill", `rgba(${tickTextColor.r}, ${tickTextColor.g}, ${tickTextColor.b}, ${tickTextColor.a})`)
