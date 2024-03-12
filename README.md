@@ -1,7 +1,9 @@
 # DataVisualizer
 
 A Visualization Creation Tool for interactive diagrams using D3 library.
-Upload dataset in form of a csv-file and create different charts to represent the underlying data.
+Upload dataset in form of a csv file and create different charts to represent the underlying data.
+
+This is the typescript version of the project. The javascript version is saved in this repository [here](https://github.com/SchmittYannic/DataVisualizerLive), but it wont be maintained in the future.
 
 ## Table of Contents
 
