@@ -35,28 +35,30 @@ const App = () => {
             <ScrollToTop>
                 <Routes>
                     <Route path="/">
-                        <Route index element={<Suspense><Homepage /></Suspense>} />
+                        <Route index element={<Suspense><Homepage /></Suspense>}/>
 
-                        <Route path="/DataVisualizer/DataStep" element={
-                            <Suspense>
-                                <ProgressSteps />
-                                <DataStep />
-                            </Suspense>
-                        } />
+                        <Route path="/DataVisualizer">
+                            <Route path="/UploadStep" element={
+                                <Suspense>
+                                    <ProgressSteps />
+                                    <UploadStep />
+                                </Suspense>
+                            } />
 
-                        <Route path="/DataVisualizer/UploadStep" element={
-                            <Suspense>
-                                <ProgressSteps />
-                                <UploadStep />
-                            </Suspense>
-                        } />
+                            <Route path="/DataStep" element={
+                                <Suspense>
+                                    <ProgressSteps />
+                                    <DataStep />
+                                </Suspense>
+                            } />
 
-                        <Route path="/DataVisualizer/VisualizationStep" element={
-                            <Suspense>
-                                <ProgressSteps />
-                                <VisualizationStep />
-                            </Suspense>
-                        } />
+                            <Route path="/VisualizationStep" element={
+                                <Suspense>
+                                    <ProgressSteps />
+                                    <VisualizationStep />
+                                </Suspense>
+                            } />
+                        </Route>
                     </Route>
 
                     {/* if route doesnt exist redirect back to frontpage */}
