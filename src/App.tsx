@@ -37,28 +37,26 @@ const App = () => {
                     <Route path="/">
                         <Route index element={<Suspense><Homepage /></Suspense>}/>
 
-                        <Route path="DataVisualizer">
-                            <Route path="UploadStep" element={
-                                <Suspense>
-                                    <ProgressSteps />
-                                    <UploadStep />
-                                </Suspense>
-                            } />
+                        <Route path="DataVisualizer/UploadStep" element={
+                            <Suspense>
+                                <ProgressSteps />
+                                <UploadStep />
+                            </Suspense>
+                        } />
 
-                            <Route path="DataStep" element={
-                                <Suspense>
-                                    <ProgressSteps />
-                                    <DataStep />
-                                </Suspense>
-                            } />
+                        <Route path="DataVisualizer/DataStep" element={
+                            <Suspense>
+                                <ProgressSteps />
+                                <DataStep />
+                            </Suspense>
+                        } />
 
-                            <Route path="VisualizationStep" element={
-                                <Suspense>
-                                    <ProgressSteps />
-                                    <VisualizationStep />
-                                </Suspense>
-                            } />
-                        </Route>
+                        <Route path="DataVisualizer/VisualizationStep" element={
+                            <Suspense>
+                                <ProgressSteps />
+                                <VisualizationStep />
+                            </Suspense>
+                        } />                 
                     </Route>
 
                     {/* if route doesnt exist redirect back to frontpage */}
