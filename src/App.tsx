@@ -37,14 +37,26 @@ const App = () => {
                     <Route path="/">
                         <Route index element={<Suspense><Homepage /></Suspense>} />
 
-                        {steps.map((step, idx) => (
-                            <Route key={idx} path={step.path} element={
-                                <Suspense>
-                                    <ProgressSteps />
-                                    <step.component />
-                                </Suspense>
-                            }/>
-                        ))}
+                        <Route path="/DataVisualizer/UploadStep" element={
+                            <Suspense>
+                                <ProgressSteps />
+                                <UploadStep />
+                            </Suspense>
+                        } />
+
+                        <Route path="/DataVisualizer/DataStep" element={
+                            <Suspense>
+                                <ProgressSteps />
+                                <DataStep />
+                            </Suspense>
+                        } />
+
+                        <Route path="/DataVisualizer/VisualizationStep" element={
+                            <Suspense>
+                                <ProgressSteps />
+                                <VisualizationStep />
+                            </Suspense>
+                        } />
                     </Route>
 
                     {/* if route doesnt exist redirect back to frontpage */}
