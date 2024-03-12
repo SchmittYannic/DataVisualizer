@@ -12,6 +12,26 @@ export type PathDataEntryType = {
     values: dataAsJSONEntryType[]
 }
 
+export type BoxplotStatsType = {
+    q1: number | undefined,
+    median: number | undefined,
+    q3: number | undefined,
+    iqr: number | undefined,
+    lowerIqr: number | undefined,
+    upperIqr: number | undefined,
+    min: number | undefined,
+    max: number | undefined,
+    lowOutlier: number[] | undefined,
+    highOutlier: number[] | undefined,
+    skewness: number | undefined,
+    kurtosis: number | undefined,
+}
+
+export type BoxplotDataEntryType = {
+    key: keyof dataAsJSONEntryType,
+    value: BoxplotStatsType,
+}
+
 export type useScrollPositionType = {
     scrollY: undefined | number,
     scrollX: undefined | number,
