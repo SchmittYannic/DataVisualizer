@@ -7,40 +7,40 @@ import useToggleHorizontalScrollbar from "../../hooks/useToggleHorizontalScrollb
 import DataTable from "./DataTable";
 
 const DataStep = () => {
-    const { dataAsJSONLength, fileIsUploaded, isLoading } = useData();
+    //const { dataAsJSONLength, fileIsUploaded, isLoading } = useData();
     useToggleHorizontalScrollbar();
 
-    if (fileIsUploaded) {
-        return (
-            <>
-                <main className="main-data">
-                    <div className="table-wrapper">
-                        {
-                            dataAsJSONLength !== 0 && <DataTable />
-                        }
-                    </div>
-                </main>
+    // if (fileIsUploaded) {
+    //     return (
+    //         <>
+    //             <main className="main-data">
+    //                 <div className="table-wrapper">
+    //                     {
+    //                         dataAsJSONLength !== 0 && <DataTable />
+    //                     }
+    //                 </div>
+    //             </main>
 
-                <div className="navigation-wrapper">
-                    <Link
-                        className="btn"
-                        title="Zurück zum Upload"
-                        to={`/DataVisualizer/UploadStep`}
-                    >
-                        Zurück
-                    </Link>
-                    <AsyncLink
-                        className={`btn next-btn${isLoading ? " disabled-btn" : ""}`}
-                        title={isLoading ? "Änderungen werden gespeichert..." : "Weiter zur Visualisierung"}
-                        to={`/DataVisualizer/VisualizationStep`}
-                        isLoading={isLoading}
-                    >
-                        Weiter
-                    </AsyncLink>
-                </div>
-            </>
-        )
-    } else {
+    //             <div className="navigation-wrapper">
+    //                 <Link
+    //                     className="btn"
+    //                     title="Zurück zum Upload"
+    //                     to={`/DataVisualizer/UploadStep`}
+    //                 >
+    //                     Zurück
+    //                 </Link>
+    //                 <AsyncLink
+    //                     className={`btn next-btn${isLoading ? " disabled-btn" : ""}`}
+    //                     title={isLoading ? "Änderungen werden gespeichert..." : "Weiter zur Visualisierung"}
+    //                     to={`/DataVisualizer/VisualizationStep`}
+    //                     isLoading={isLoading}
+    //                 >
+    //                     Weiter
+    //                 </AsyncLink>
+    //             </div>
+    //         </>
+    //     )
+    // } else {
         return (
             <main className="main-data">
                 <InfoBox>
@@ -58,7 +58,7 @@ const DataStep = () => {
                 </InfoBox>
             </main>
         )
-    }
+    // }
 };
 
 export default DataStep;
