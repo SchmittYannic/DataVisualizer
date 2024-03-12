@@ -11,6 +11,7 @@ import { calcKurtosis } from "./boxplot/calcKurtosis";
 import { calcSkewness } from "./boxplot/calcSkewness";
 import { placeholderString } from "../../constants";
 import { BarchartDataEntryType, PathDataEntryType, SettingsType, dataAsJSONEntryType } from "../../utils/types";
+import toSortedArrayOfObjByKey from "../../utils/toSortedArrayOfObjByKey";
 
 const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJSON: dataAsJSONEntryType[]) => {
     const charttype = settingsRef.current.charttype;
@@ -83,16 +84,8 @@ const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJS
     }
 
     function renderLinechart() {
-        const SortedData: dataAsJSONEntryType[] = sortByKey(dataAsJSON, xColumn);
-        const pathdata = d3.group(SortedData, (d) => d);
-
-        function sortByKey(array: dataAsJSONEntryType[], key: keyof dataAsJSONEntryType) {
-            const arrayCopy = JSON.parse(JSON.stringify(array));
-            return arrayCopy.sort(function(a: dataAsJSONEntryType, b: dataAsJSONEntryType) {
-                var x = a[key]; var y = b[key];
-                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-            });
-        };
+        const SortedData: dataAsJSONEntryType[] = toSortedArrayOfObjByKey(dataAsJSON, xColumn);
+        const pathdata: PathDataEntryType[] = [{ key: "pathdata", values: SortedData }];
 
         if (xColumn===undefined) {
             svg.append('text')
@@ -110,16 +103,8 @@ const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJS
     }
 
     function renderAreachart() {
-        const SortedData: dataAsJSONEntryType[] = sortByKey(dataAsJSON, xColumn);
+        const SortedData: dataAsJSONEntryType[] = toSortedArrayOfObjByKey(dataAsJSON, xColumn);
         const pathdata: PathDataEntryType[] = [{ key: "pathdata", values: SortedData }];
-
-        function sortByKey<T>(array: T[], key: keyof T): T[] {
-            const arrayCopy = JSON.parse(JSON.stringify(array)) as T[];
-            return arrayCopy.sort(function(a, b) {
-                var x = a[key]; var y = b[key];
-                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-            });
-        };
 
         if (xColumn===undefined) {
             svg.append('text')
