@@ -68,20 +68,24 @@ $ git clone https://github.com/SchmittYannic/DataVisualizer.git
 
 Open Project in an Editor like Visual Studio Code.
 
-Install all npm packages with:
-
 ```bash
 $ npm install
 ```
 
-To start development server:
+Installs all required npm packages 
 
 ```bash
 $ npm run dev
 ```
 
-To create build:
+Runs the app in the development mode. See console for exact address. Defaults to [http://localhost:3000](http://localhost:3000).
+
+The page will reload when you make changes. You may also see any lint errors in the console.
 
 ```bash
 $ npm run build
 ```
+
+Builds the app for production to the `dist` folder.
+
+It correctly bundles React in production mode and optimizes the build for the best performance. The build is minified and the filenames include the hashes.
