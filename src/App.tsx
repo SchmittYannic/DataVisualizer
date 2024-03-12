@@ -37,22 +37,22 @@ const App = () => {
                     <Route path="/">
                         <Route index element={<Suspense><Homepage /></Suspense>}/>
 
-                        <Route path="/DataVisualizer">
-                            <Route path="/UploadStep" element={
+                        <Route path="DataVisualizer">
+                            <Route path="UploadStep" element={
                                 <Suspense>
                                     <ProgressSteps />
                                     <UploadStep />
                                 </Suspense>
                             } />
 
-                            <Route path="/DataStep" element={
+                            <Route path="DataStep" element={
                                 <Suspense>
                                     <ProgressSteps />
                                     <DataStep />
                                 </Suspense>
                             } />
 
-                            <Route path="/VisualizationStep" element={
+                            <Route path="VisualizationStep" element={
                                 <Suspense>
                                     <ProgressSteps />
                                     <VisualizationStep />
