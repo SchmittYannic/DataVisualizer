@@ -32,6 +32,11 @@ export type BoxplotDataEntryType = {
     value: BoxplotStatsType,
 }
 
+export type OutlierDataEntryType = {
+    key: string | number,
+    value: number
+}
+
 export type useScrollPositionType = {
     scrollY: undefined | number,
     scrollX: undefined | number,
