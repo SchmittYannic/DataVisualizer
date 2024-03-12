@@ -10,7 +10,7 @@ import { areachart } from "./areachart/AreachartLogic";
 import { calcKurtosis } from "./boxplot/calcKurtosis";
 import { calcSkewness } from "./boxplot/calcSkewness";
 import { placeholderString } from "../../constants";
-import { BarchartDataEntryType, PathDataEntryType, SettingsType, dataAsJSONEntryType } from "../../utils/types";
+import { BarchartDataEntryType, BoxplotDataEntryType, PathDataEntryType, SettingsType, dataAsJSONEntryType } from "../../utils/types";
 import toSortedArrayOfObjByKey from "../../utils/toSortedArrayOfObjByKey";
 
 const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJSON: dataAsJSONEntryType[]) => {
@@ -128,18 +128,18 @@ const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJS
     }
 
     function calcBoxplotStats() {
-        const calcStats = (d: dataAsJSONEntryType) => {
-            const array: number[] = d.map((e: dataAsJSONEntryType) => e[xColumn]);
+        const calcStats = (d: dataAsJSONEntryType[]) => {
+            const array = d.map((e) => e[xColumn]) as number[];
             const q1 = d3.quantile(array.sort(d3.ascending),.25);
             const median = d3.quantile(array.sort(d3.ascending),.5);
             const q3 = d3.quantile(array.sort(d3.ascending),.75);
-            const iqr = (q3 as number) - (q1 as number);
-            const lowerIqr = (q1 as number) - 1.5 * iqr;
-            const upperIqr = (q3 as number) + 1.5 * iqr;
+            const iqr = q1 && q3 ? q3 - q1 : undefined;
+            const lowerIqr = q1 && iqr ? q1 - 1.5 * iqr : undefined;
+            const upperIqr = q3 && iqr ? q3 + 1.5 * iqr : undefined;
             const min = d3.min(array);
             const max = d3.max(array);
-            const lowOutlier = array.filter(outlier => outlier < lowerIqr);
-            const highOutlier = array.filter(outlier => outlier > upperIqr);
+            const lowOutlier = lowerIqr ? array.filter(outlier => outlier < lowerIqr) : undefined;
+            const highOutlier = upperIqr ? array.filter(outlier => outlier > upperIqr) : undefined;
             const skewness = calcSkewness(array);
             const kurtosis = calcKurtosis(array);
             return({
@@ -163,10 +163,12 @@ const renderChart = (settingsRef: React.MutableRefObject<SettingsType>, dataAsJS
         if (zGrouping !== placeholderString){
             stats = d3.rollup(dataAsJSON, calcStats, (d) => d[zGrouping]);
         } else {
-            stats = d3.rollup(dataAsJSON, calcStats, (d) => xColumn);
+            stats = d3.rollup(dataAsJSON, calcStats, (_d) => xColumn);
         }
 
-        return Array.from(stats, ([key, value]) => ({ key, value }));
+        const result: BoxplotDataEntryType[] = Array.from(stats, ([key, value]) => ({ key, value }));
+
+        return result
     }
 };
 
