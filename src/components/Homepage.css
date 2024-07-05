@@ -142,6 +142,27 @@ canvas {
     margin-top: 1rem;
 }
 
+.footer {
+    margin: 0 auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    max-width: var(--max-content-width);
+    display: flex;
+    justify-content: center;
+    border: var(--homepage-guides);
+    border-top: none;
+}
+
+.footer a {
+    color: var(--subtext-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: var(--action-color-dark);
+    text-decoration: underline;
+}
+
 
 @media only screen and (max-width: 1140px) {
     
@@ -191,6 +212,11 @@ canvas {
 
     .card:last-of-type {
         border: none;
+    }
+
+    .footer {
+        border: none;
+        border-top: 1px solid var(--border-color);
     }
 }
 
