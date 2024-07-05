@@ -7,6 +7,7 @@ const UploadStep = lazy(() => import("./features/datavisualizer/UploadStep" /* w
 const DataStep = lazy(() => import("./features/datavisualizer/DataStep" /* webpackChunkName: "DataStep" */));
 const VisualizationStep = lazy(() => import("./features/datavisualizer/VisualizationStep" /* webpackChunkName: "VisualizationStep" */));
 const ProgressSteps = lazy(() => import("./components/ProgressSteps" /* webpackChunkName: "ProgressStep" */));
+const Impressum = lazy(() => import("./components/Impressum" /* webpackChunkName: "Impressum" */));
 
 export const steps = [
     {
@@ -35,7 +36,7 @@ const App = () => {
             <ScrollToTop>
                 <Routes>
                     <Route path="/">
-                        <Route index element={<Suspense><Homepage /></Suspense>}/>
+                        <Route index element={<Suspense><Homepage /></Suspense>} />
 
                         <Route path="DataVisualizer/UploadStep" element={
                             <Suspense>
@@ -56,11 +57,17 @@ const App = () => {
                                 <ProgressSteps />
                                 <VisualizationStep />
                             </Suspense>
-                        } />                 
+                        } />
+
+                        <Route path="/impressum" element={
+                            <Suspense>
+                                <Impressum />
+                            </Suspense>
+                        } />
                     </Route>
 
                     {/* if route doesnt exist redirect back to frontpage */}
-                    <Route path="*" element={ <Navigate to="/" /> }/>
+                    <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </ScrollToTop>
         </Router>
