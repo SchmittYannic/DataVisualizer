@@ -68,7 +68,7 @@
     text-align: center;
     margin-bottom: 0.5rem;
     padding: 0 15px;
-    color: #6b7280;
+    color: var(--subtext-color);
 }
 
 .dark .dropzone-headtext {
@@ -81,7 +81,7 @@
     margin-top: 5px;
     font-size: var(--font-size-xs);
     line-height: var(--line-height-none);
-    color: #6b7280;
+    color: var(--subtext-color);
 }
 
 .dark .dropzone-subtext {
