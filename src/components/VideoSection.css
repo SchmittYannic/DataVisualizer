@@ -75,7 +75,12 @@
     left: 0;
     width: 100%;
     /* background-color: transparent; */
-    background: linear-gradient(90deg,oklch(63.32% .24 31.68 /.2) 0%,oklch(69.02% .277 332.77 /.2) 50%,oklch(53.18% .28 296.97 /.2) 100%)
+    background: linear-gradient(
+        90deg,
+        oklch(63.32% .24 31.68 /.2) 0%,
+        oklch(69.02% .277 332.77 /.2) 50%,
+        oklch(53.18% .28 296.97 /.2) 100%
+    );
 }
 
 .video-section .progressbar-done {
