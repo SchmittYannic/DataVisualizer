@@ -128,13 +128,28 @@ canvas {
 }
 
 .card-header {
+    position: relative;
     margin-top: 1rem;
     line-height: var(--line-height-none);
     font-size: var(--font-size-3xl);
 }
 
+.card-header::before {
+    position: absolute;
+    left: calc((var(--homepage-padding) + 2px) * -1);
+    content: "";
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(
+        0deg,
+        oklch(95% .05 31.68) 0%,
+        oklch(95% .06 332.77) 50%,
+        oklch(90% .07 296.97) 100%
+    );
+}
+
 .card p {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-base);
     line-height: var(--line-height-relaxed);
 }
 
