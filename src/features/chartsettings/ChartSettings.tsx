@@ -18,7 +18,7 @@ import { placeholderString, defaultMultiAccordionState, ChartOptions, navigation
 import BackButton from "./BackButton";
 import { ChartType, SettingsDimensionsType, SettingsTabType, SettingsType } from "../../utils/types";
 
-type ChartSettingsPropsType ={
+type ChartSettingsPropsType = {
     settingsRef: React.MutableRefObject<SettingsType>,
     setSelectedChart: React.Dispatch<React.SetStateAction<ChartType>>,
     setDimensions: React.Dispatch<React.SetStateAction<SettingsDimensionsType>>,
@@ -26,7 +26,7 @@ type ChartSettingsPropsType ={
     setActiveTab: React.Dispatch<React.SetStateAction<SettingsTabType>>,
 }
 
-const ChartSettings = ({ 
+const ChartSettings = ({
     settingsRef,
     setSelectedChart,
     setDimensions,
@@ -34,7 +34,7 @@ const ChartSettings = ({
     setActiveTab
 }: ChartSettingsPropsType) => {
 
-    const { 
+    const {
         numColumns,
         catColumns,
         dateOptions,
@@ -50,9 +50,9 @@ const ChartSettings = ({
 
     const selectedChart = settingsRef.current.charttype;
 
-    const initialSlideIn = { x: 500 };
-    const animateSlideIn = { x: 0 };
-    const exitSlideIn = { x: -500 };
+    const initialOpacity = { opacity: 0, };
+    const animateOpacity = { opacity: 1, };
+    const exitOpacity = { opacity: 0, };
 
     const handleSelectChart = (input: ChartType) => {
         const newRef = { ...settingsRef.current };
@@ -126,26 +126,26 @@ const ChartSettings = ({
                         )}
                         {defaultMultiAccordionState.map((state, idx) => {
                             if (((selectedChart === "barchart" && dataAsJSONLength > 0 && catColumnsLength > 0)
-                            ||  (selectedChart === "piechart" && dataAsJSONLength > 0 && catColumnsLength > 0)
-                            || (selectedChart === "boxplot" && dataAsJSONLength > 0 && numColumnsLength > 0)
-                            || (selectedChart === "histogram" && dataAsJSONLength > 0 && numColumnsLength > 0)
-                            || (selectedChart === "linechart" && dataAsJSONLength > 0 && numColumnsLength > 0 && dateColumnsLength > 0)
-                            || (selectedChart === "areachart" && dataAsJSONLength > 0 && numColumnsLength > 0 && dateColumnsLength > 0)
-                            || (selectedChart === "scatterplot" && dataAsJSONLength > 0 && numColumnsLength > 0))) {
+                                || (selectedChart === "piechart" && dataAsJSONLength > 0 && catColumnsLength > 0)
+                                || (selectedChart === "boxplot" && dataAsJSONLength > 0 && numColumnsLength > 0)
+                                || (selectedChart === "histogram" && dataAsJSONLength > 0 && numColumnsLength > 0)
+                                || (selectedChart === "linechart" && dataAsJSONLength > 0 && numColumnsLength > 0 && dateColumnsLength > 0)
+                                || (selectedChart === "areachart" && dataAsJSONLength > 0 && numColumnsLength > 0 && dateColumnsLength > 0)
+                                || (selectedChart === "scatterplot" && dataAsJSONLength > 0 && numColumnsLength > 0))) {
                                 return (
                                     <motion.button
-                                        key={state.name+idx}
+                                        key={state.name + idx}
                                         className="side-menu-link"
                                         type="button"
                                         onClick={() => setActiveTab(state.name)}
                                         title={`Öffnen Konfiguration: ${state.name}`}
-                                        initial={initialSlideIn}
-                                        animate={animateSlideIn}
-                                        transition={{ 
-                                            delay: 0.1 * idx, 
-                                            stiffness: 100 
+                                        initial={initialOpacity}
+                                        animate={animateOpacity}
+                                        transition={{
+                                            delay: 0.05 * idx,
+                                            stiffness: 100
                                         }}
-                                        exit={exitSlideIn}
+                                        exit={exitOpacity}
                                     >
                                         {state.name}
                                         <FaArrowRightLong aria-hidden="true" />
@@ -153,33 +153,33 @@ const ChartSettings = ({
                                 )
                             } else {
                                 return (
-                                    <Fragment key={state.name+idx}>
+                                    <Fragment key={state.name + idx}>
                                         {idx === 0 && (
                                             <motion.button
                                                 className="side-menu-link"
                                                 type="button"
                                                 onClick={() => setActiveTab(state.name)}
                                                 title={`Öffnen Konfiguration: ${state.name}`}
-                                                initial={initialSlideIn}
-                                                animate={animateSlideIn}
-                                                transition={{ 
-                                                    delay: 0.1 * idx, 
-                                                    stiffness: 100 
+                                                initial={initialOpacity}
+                                                animate={animateOpacity}
+                                                transition={{
+                                                    delay: 0.1 * idx,
+                                                    stiffness: 100
                                                 }}
-                                                exit={exitSlideIn}
+                                                exit={exitOpacity}
                                             >
                                                 {state.name}
                                                 <FaArrowRightLong aria-hidden="true" />
                                             </motion.button>
                                         )}
-                                    </Fragment>                              
+                                    </Fragment>
                                 )
                             }
                         })}
                     </>
                 )
             }
-            
+
 
             {
                 activeTab === "Chartoptionen" && (
@@ -195,18 +195,18 @@ const ChartSettings = ({
                         <div className={`${isMobile ? "chart-options-mobile" : "chart-options"}`}>
                             {ChartOptions.map((option, key) => (
                                 <motion.button
-                                    key={option.name+key}
+                                    key={option.name + key}
                                     type="button"
                                     className={`${isMobile ? "btn" : "btn full"}`}
-                                    onClick={()=>handleSelectChart(option.action)}
+                                    onClick={() => handleSelectChart(option.action)}
                                     title={`Wechsel zu ${option.name}`}
-                                    initial={initialSlideIn}
-                                    animate={animateSlideIn}
-                                    transition={{ 
-                                        delay: 0.1 * key, 
-                                        stiffness: 100 
+                                    initial={initialOpacity}
+                                    animate={animateOpacity}
+                                    transition={{
+                                        delay: 0.1 * key,
+                                        stiffness: 100
                                     }}
-                                    exit={exitSlideIn}
+                                    exit={exitOpacity}
                                 >
                                     {isMobile ? option.icon : option.name}
                                 </motion.button>
@@ -214,7 +214,7 @@ const ChartSettings = ({
                         </div>
                     </div>
                 )
-            } 
+            }
 
             {
                 activeTab === "Dimensionen" && (

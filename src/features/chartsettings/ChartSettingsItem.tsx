@@ -5,17 +5,22 @@ type ChartSettingsItemPropsType = PropsWithChildren<{
     idx?: number,
 }>
 
-const ChartSettingsItem = ({ children, idx=0 }: ChartSettingsItemPropsType) => {
+const ChartSettingsItem = ({ children, idx = 0 }: ChartSettingsItemPropsType) => {
+
+    const initialOpacity = { opacity: 0, };
+    const animateOpacity = { opacity: 1, };
+    const exitOpacity = { opacity: 0, };
+
     return (
-        <motion.div 
+        <motion.div
             className="chart-settings-item"
-            initial={{ x: 500 }}
-            animate={{ x: 0 }}
-            transition={{ 
-                delay: 0.1 * idx, 
-                stiffness: 100 
+            initial={initialOpacity}
+            animate={animateOpacity}
+            transition={{
+                delay: 0.05 * idx,
+                stiffness: 100
             }}
-            exit={{ x: -500 }}
+            exit={exitOpacity}
         >
             {children}
         </motion.div>

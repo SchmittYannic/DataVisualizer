@@ -23,6 +23,10 @@ const TickSettings = ({
     const [tickTextColor, setTickTextColor] = useState(settingsRef.current.tick.tickTextColor);
     const [tickLineColor, setTickLineColor] = useState(settingsRef.current.tick.tickLineColor);
 
+    const initialOpacity = { opacity: 0, };
+    const animateOpacity = { opacity: 1, };
+    const exitOpacity = { opacity: 0, };
+
     useEffect(() => {
         const newRef = { ...settingsRef.current };
         newRef.tick.tickTextColor.r = tickTextColor.r;
@@ -47,15 +51,15 @@ const TickSettings = ({
 
     return (
         <>
-            <motion.div 
+            <motion.div
                 className="charts-settings-divider"
-                initial={{ x: 500 }}
-                animate={{ x: 0 }}
-                transition={{ 
-                    delay: 0.1 * 0, 
-                    stiffness: 100 
+                initial={initialOpacity}
+                animate={animateOpacity}
+                transition={{
+                    delay: 0.05 * 0,
+                    stiffness: 100
                 }}
-                exit={{ x: -500 }}
+                exit={exitOpacity}
             >
                 Teilstriche
                 <div className="charts-settings-divider-line" aria-hidden="true" />
@@ -89,15 +93,15 @@ const TickSettings = ({
                 />
             </ChartSettingsItem>
 
-            <motion.div 
+            <motion.div
                 className="charts-settings-divider"
-                initial={{ x: 500 }}
-                animate={{ x: 0 }}
-                transition={{ 
-                    delay: 0.1 * 3, 
-                    stiffness: 100 
+                initial={initialOpacity}
+                animate={animateOpacity}
+                transition={{
+                    delay: 0.05 * 3,
+                    stiffness: 100
                 }}
-                exit={{ x: -500 }}
+                exit={exitOpacity}
             >
                 Gitternetz
                 <div className="charts-settings-divider-line" aria-hidden="true" />
