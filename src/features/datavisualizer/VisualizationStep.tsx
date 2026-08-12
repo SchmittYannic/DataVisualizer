@@ -28,7 +28,7 @@ const VisualizationStep = () => {
     useToggleHorizontalScrollbar();
     const isMobile = windowSize.width && windowSize.width < 850;
 
-    const desktopChartSettingsPosition: React.MutableRefObject<PositionsType | undefined> = useRef<PositionsType>();
+    const desktopChartSettingsPosition = useRef<PositionsType>(null);
 
     const defaultDimensions: SettingsDimensionsType = {
         svgWidth: 1000,
@@ -38,7 +38,7 @@ const VisualizationStep = () => {
         svgMarginRight: 180,
         svgMarginBottom: 120,
     };
-    
+
     const defaultSettings: SettingsType = {
         charttype: "barchart",
         dimensions: defaultDimensions,
@@ -149,9 +149,9 @@ const VisualizationStep = () => {
         }
     };
 
-    const [selectedChart, setSelectedChart] = useState<ChartType>("barchart");   
+    const [selectedChart, setSelectedChart] = useState<ChartType>("barchart");
     const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-    
+
     const [dimensions, setDimensions] = useState<SettingsDimensionsType>(defaultDimensions);
     const settingsRef: React.MutableRefObject<SettingsType> = useRef<SettingsType>(defaultSettings);
 
@@ -171,22 +171,22 @@ const VisualizationStep = () => {
         const settingsHeight = Number(getComputedStyle(document.documentElement).getPropertyValue("--desktop-chart-settings-height"));
 
         desktopChartSettingsPosition.current = {
-            y: body.scrollHeight / 2 - settingsHeight/2, 
-            x: body.scrollWidth / 2 - settingsWidth/2
-        }    
+            y: body.scrollHeight / 2 - settingsHeight / 2,
+            x: body.scrollWidth / 2 - settingsWidth / 2
+        }
     }, []);
 
     if (fileIsUploaded) {
         return (
             <>
                 <main className="main-visualization">
-                    { selectedChart === "barchart" && <Barchart dimensions={dimensions} settingsRef={settingsRef} />}
-                    { selectedChart === "piechart" && <Piechart dimensions={dimensions} settingsRef={settingsRef} />}
-                    { selectedChart === "boxplot" && <Boxplot dimensions={dimensions} settingsRef={settingsRef} />}
-                    { selectedChart === "histogram" && <Histogram dimensions={dimensions} settingsRef={settingsRef} />}
-                    { selectedChart === "scatterplot" && <Scatterplot dimensions={dimensions} settingsRef={settingsRef} />}
-                    { selectedChart === "linechart" && <Linechart dimensions={dimensions} settingsRef={settingsRef} />}
-                    { selectedChart === "areachart" && <Areachart dimensions={dimensions} settingsRef={settingsRef} />}
+                    {selectedChart === "barchart" && <Barchart dimensions={dimensions} settingsRef={settingsRef} />}
+                    {selectedChart === "piechart" && <Piechart dimensions={dimensions} settingsRef={settingsRef} />}
+                    {selectedChart === "boxplot" && <Boxplot dimensions={dimensions} settingsRef={settingsRef} />}
+                    {selectedChart === "histogram" && <Histogram dimensions={dimensions} settingsRef={settingsRef} />}
+                    {selectedChart === "scatterplot" && <Scatterplot dimensions={dimensions} settingsRef={settingsRef} />}
+                    {selectedChart === "linechart" && <Linechart dimensions={dimensions} settingsRef={settingsRef} />}
+                    {selectedChart === "areachart" && <Areachart dimensions={dimensions} settingsRef={settingsRef} />}
 
                     {isMobile ? (
                         <ChartSettingsMobile
@@ -196,23 +196,23 @@ const VisualizationStep = () => {
                         />
                     ) : (
                         <AnimatePresence>
-                            {   
-                                isSettingsOpen &&
-                                
-                                    <ChartSettingsDesktop 
-                                        settingsCurrentPosition={desktopChartSettingsPosition}
-                                        settingsRef={settingsRef}
-                                        setSelectedChart={setSelectedChart}
-                                        setDimensions={setDimensions}
-                                        setIsOpen={setIsSettingsOpen}
-                                    />
+                            {
+                                isSettingsOpen && desktopChartSettingsPosition.current &&
+
+                                <ChartSettingsDesktop
+                                    settingsCurrentPosition={desktopChartSettingsPosition}
+                                    settingsRef={settingsRef}
+                                    setSelectedChart={setSelectedChart}
+                                    setDimensions={setDimensions}
+                                    setIsOpen={setIsSettingsOpen}
+                                />
                             }
                         </AnimatePresence>
                     )}
                 </main>
 
                 <div id="nav-wrapper-visualization" className="navigation-wrapper">
-                    <Link 
+                    <Link
                         className="btn"
                         title="Zurück zur Datenansicht"
                         to={`/DataVisualizer/DataStep`}
@@ -224,20 +224,20 @@ const VisualizationStep = () => {
                         <AnimatePresence>
                             {
                                 !isSettingsOpen &&
-                                    <motion.div
-                                        initial={{opacity: 0}}
-                                        animate={{opacity: 1}}
-                                        transition={{delay: 1}}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 1 }}
+                                >
+                                    <button
+                                        className="btn"
+                                        type="button"
+                                        title="Öffnen der Diagrammkonfiguration"
+                                        onClick={() => setIsSettingsOpen((prev) => !prev)}
                                     >
-                                        <button
-                                            className="btn"
-                                            type="button"
-                                            title="Öffnen der Diagrammkonfiguration"
-                                            onClick={() => setIsSettingsOpen((prev) => !prev)}
-                                        >
-                                            Diagrammkonfiguration
-                                        </button>
-                                    </motion.div>
+                                        Diagrammkonfiguration
+                                    </button>
+                                </motion.div>
                             }
                         </AnimatePresence>
                     )}
@@ -267,7 +267,7 @@ const VisualizationStep = () => {
                 <InfoBox>
                     <p>Laden Sie bitte zuerst einen Datensatz hoch, ansonsten können Sie nicht fortfahren.</p>
                     <p>Falls Sie keinen geeigneten Datensatz zur Verfügung haben, können Sie das Tool durch die Demodatensätze auf der Uploadseite ausprobieren.</p>
-                    <div style={{display: "flex", justifyContent: "flex-end", gap: "1em"}}>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "1em" }}>
                         <Link
                             className="btn next-btn"
                             title="Link zur Uploadseite"

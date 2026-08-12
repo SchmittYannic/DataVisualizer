@@ -1,9 +1,7 @@
 import { Suspense, useEffect, useRef, lazy } from "react";
 import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
-import Lottie from "lottie-react";
 
-import { chartLottie, lightningLottie, settingLottie } from "../assets";
 import HeroChartAnimation from "./HeroChartAnimation";
 import BottomSection from "./BottomSection";
 import ErrorBoundary from "./ErrorBoundary";
@@ -99,17 +97,17 @@ const Homepage = () => {
 
             <section className="card-section">
                 <div className="card">
-                    <Lottie className="card-icon" aria-hidden="true" animationData={lightningLottie} />
+                    {/* <Lottie className="card-icon" aria-hidden="true" animationData={lightningLottie} /> */}
                     <h2 className="card-header">Schnell</h2>
                     <p>Nur 3 Schritte bis zum fertigen Diagramm.<br />Der Prozess der Diagrammerstellung besteht aus: dem <span className="font-bold">Upload</span> des Datensatzes, der <span className="font-bold">Ansicht</span> der hochgeladenen Daten und der Erstellung der <span className="font-bold">Visualisierung</span>.</p>
                 </div>
                 <div className="card">
-                    <Lottie className="card-icon" aria-hidden="true" animationData={chartLottie} />
+                    {/* <Lottie className="card-icon" aria-hidden="true" animationData={chartLottie} /> */}
                     <h2 className="card-header">Auswahl</h2>
                     <p>Eine große Auswahl an Diagrammtypen.<br />Unterstützt die Erstellung von <span className="font-bold">Boxplots</span>, <span className="font-bold">Säulen-</span>, <span className="font-bold">Kreis-</span>, <span className="font-bold">Streu-</span>, <span className="font-bold">Linien-</span> und <span className="font-bold">Flächendiagrammen</span>.</p>
                 </div>
                 <div className="card">
-                    <Lottie className="card-icon" aria-hidden="true" animationData={settingLottie} />
+                    {/* <Lottie className="card-icon" aria-hidden="true" animationData={settingLottie} /> */}
                     <h2 className="card-header">Anpassbarkeit</h2>
                     <p>Einfache Anpassung der Diagramme an individuelle Bedürfnisse.<br />Anpassung der <span className="font-bold">Dimensionen</span>, <span className="font-bold">Farbgestaltung</span> und <span className="font-bold">Textinhalte</span> des Diagramms.</p>
                 </div>

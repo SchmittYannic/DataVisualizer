@@ -43,8 +43,8 @@ export type useScrollPositionType = {
 }
 
 export type PositionsType = {
-    y:number,
-    x:number,
+    y: number,
+    x: number,
 }
 
 export type TabType = "upload" | "data" | "visualisierung";
@@ -62,7 +62,7 @@ export type DefaultAccordionStateType = {
 export type ChartOptionsType = {
     name: string,
     action: ChartType,
-    icon: JSX.Element,
+    icon: React.JSX.Element,
 }
 
 export type ColorType = {

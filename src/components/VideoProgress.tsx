@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import useIsDocumentHidden from "../hooks/useIsDocumentHidden";
 
 type VideoProgressPropsType = {
-    videoRef: React.RefObject<HTMLVideoElement>,
+    videoRef: React.RefObject<HTMLVideoElement | null>,
     vertical?: boolean,
 }
 
-const VideoProgress = ({ videoRef, vertical=true }: VideoProgressPropsType) => {
+const VideoProgress = ({ videoRef, vertical = true }: VideoProgressPropsType) => {
 
     const [scope, animate] = useAnimate();
     const isDocumentHidden = useIsDocumentHidden();
@@ -60,9 +60,9 @@ const VideoProgress = ({ videoRef, vertical=true }: VideoProgressPropsType) => {
     return (
         <>
             {(duration > 0) && (
-                <div 
+                <div
                     className="progressbar"
-                >    
+                >
                     <div
                         ref={scope}
                         className="progressbar-done"

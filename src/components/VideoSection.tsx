@@ -33,7 +33,7 @@ const VideoSection = () => {
         if (!isDocumentHidden) videoRef.current.play();
     }, [isDocumentHidden])
 
-    return (      
+    return (
         <>
             <h2>Prozess der Diagrammerstellung</h2>
 
@@ -44,8 +44,8 @@ const VideoSection = () => {
                     onClick={() => setActiveTab("upload")}
                     title={`${activeTab === "upload" ? "" : "auf Upload Registerkarte umschalten"}`}
                 >
-                    <span className="font-bold">Upload</span>                   
-                    
+                    <span className="font-bold">Upload</span>
+
                     {activeTab === "upload" && (
                         <VideoProgress
                             videoRef={videoRef}
@@ -59,7 +59,7 @@ const VideoSection = () => {
                     onClick={() => setActiveTab("data")}
                     title={`${activeTab === "data" ? "" : "auf Datenansicht Registerkarte umschalten"}`}
                 >
-                    <span className="font-bold">Datenansicht</span> 
+                    <span className="font-bold">Datenansicht</span>
 
                     {activeTab === "data" && (
                         <VideoProgress
@@ -74,8 +74,8 @@ const VideoSection = () => {
                     onClick={() => setActiveTab("visualisierung")}
                     title={`${activeTab === "visualisierung" ? "" : "auf Visualisierung Registerkarte umschalten"}`}
                 >
-                    <span className="font-bold">Visualisierung</span> 
-                    
+                    <span className="font-bold">Visualisierung</span>
+
                     {activeTab === "visualisierung" && (
                         <VideoProgress
                             videoRef={videoRef}
@@ -90,10 +90,10 @@ const VideoSection = () => {
                     <>
                         <div className="video-section-text">
                             <p>
-                                Der erste Schritt besteht aus dem Hochladen eines Datensatzes. DataVisualizer unterstützt das Dateiformat: <span className="font-bold">csv</span>. Bitte achten Sie darauf, dass Dezimalzahlen in Ihrer Datei durch einen Punkt (.) getrennt werden.<br/>Das Tool lässt sich auch ohne eigenen Datensatz testen. Hierfür werden Ihnen von uns zwei Datensätze zur Verfügung gestellt.
+                                Der erste Schritt besteht aus dem Hochladen eines Datensatzes. DataVisualizer unterstützt das Dateiformat: <span className="font-bold">csv</span>. Bitte achten Sie darauf, dass Dezimalzahlen in Ihrer Datei durch einen Punkt (.) getrennt werden.<br />Das Tool lässt sich auch ohne eigenen Datensatz testen. Hierfür werden Ihnen von uns zwei Datensätze zur Verfügung gestellt.
                             </p>
                         </div>
-                        <div className="video-section-video-wrapper">      
+                        <div className="video-section-video-wrapper">
                             <video
                                 id="uploadvideo"
                                 ref={videoRef}
@@ -103,7 +103,7 @@ const VideoSection = () => {
                                 onEnded={() => setActiveTab("data")}
                             >
                                 <source src={uploadwebm} type="video/webm" />
-                                
+
                                 Your browser does not support the video tag.
                             </video>
                         </div>
@@ -120,7 +120,7 @@ const VideoSection = () => {
                                 Sortier- und Filterfunktionalität ermöglichen eine vereinfachte Navigation ihres Datensatzes. Zudem können hier einzelne Dateneinträge ein letztes Mal vor der Diagrammerstellung angepasst werden.
                             </p>
                         </div>
-                        <div className="video-section-video-wrapper">      
+                        <div className="video-section-video-wrapper">
                             <video
                                 id="datavideo"
                                 ref={videoRef}
@@ -130,7 +130,7 @@ const VideoSection = () => {
                                 onEnded={() => setActiveTab("visualisierung")}
                             >
                                 <source src={datawebm} type="video/webm" />
-                                
+
                                 Your browser does not support the video tag.
                             </video>
                         </div>
@@ -150,7 +150,7 @@ const VideoSection = () => {
                                 Alternativ kann das Diagramm zusammen mit einem Script in die Zwischenablage kopiert werden. Dies ermöglicht ein einfaches Einfügen des Diagramms in ihre Webseite. Das beigefügte Script erhält die Interaktivität des Diagramms.
                             </p>
                         </div>
-                        <div className="video-section-video-wrapper">      
+                        <div className="video-section-video-wrapper">
                             <video
                                 id="visvideo"
                                 ref={videoRef}
@@ -160,14 +160,14 @@ const VideoSection = () => {
                                 onEnded={() => setActiveTab("upload")}
                             >
                                 <source src={viswebm} type="video/webm" />
-                                
+
                                 Your browser does not support the video tag.
                             </video>
                         </div>
                     </>
                 )}
             </div>
-        </>           
+        </>
     )
 }
 

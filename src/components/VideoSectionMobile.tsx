@@ -18,7 +18,7 @@ const VideoSectionMobile = () => {
 
     const windowSize = useWindowSize();
     const [activeTab, setActiveTab] = useState<TabType>("upload");
-    const timeout: React.MutableRefObject<ReturnType<typeof setTimeout> | undefined> = useRef<ReturnType<typeof setTimeout>>();
+    const timeout = useRef<ReturnType<typeof setTimeout>>(null);
 
     const isMobile = windowSize.width <= 680;
 
@@ -64,13 +64,13 @@ const VideoSectionMobile = () => {
                     type="button"
                     onClick={() => setActiveTab("upload")}
                     title={`${isUploadActive ? "" : "auf Upload Registerkarte umschalten"}`}
-                    animate={{ 
+                    animate={{
                         width: isUploadActive ? activeTabWidth : inactiveTabWidth,
                     }}
                     transition={{
                         ease: "easeInOut",
                     }}
-                >                                 
+                >
                     {isUploadActive ? (
                         <>
                             <span className="font-bold">Upload</span>
@@ -81,7 +81,7 @@ const VideoSectionMobile = () => {
                             />
                         </>
                     ) : (
-                        <span className="font-bold">1</span> 
+                        <span className="font-bold">1</span>
                     )}
                 </motion.button>
                 <motion.button
@@ -89,7 +89,7 @@ const VideoSectionMobile = () => {
                     type="button"
                     onClick={() => setActiveTab("data")}
                     title={`${isDataActive ? "" : "auf Datenansicht Registerkarte umschalten"}`}
-                    animate={{ 
+                    animate={{
                         width: isDataActive ? activeTabWidth : inactiveTabWidth,
                     }}
                     transition={{
@@ -106,7 +106,7 @@ const VideoSectionMobile = () => {
                             />
                         </>
                     ) : (
-                        <span className="font-bold">2</span> 
+                        <span className="font-bold">2</span>
                     )}
                 </motion.button>
                 <motion.button
@@ -114,13 +114,13 @@ const VideoSectionMobile = () => {
                     type="button"
                     onClick={() => setActiveTab("visualisierung")}
                     title={`${isVisualisierungActive ? "" : "auf Visualisierung Registerkarte umschalten"}`}
-                    animate={{ 
+                    animate={{
                         width: isVisualisierungActive ? activeTabWidth : inactiveTabWidth,
                     }}
                     transition={{
                         ease: "easeInOut",
                     }}
-                >                 
+                >
                     {isVisualisierungActive ? (
                         <>
                             <span className="font-bold">Visualisierung</span>
@@ -131,7 +131,7 @@ const VideoSectionMobile = () => {
                             />
                         </>
                     ) : (
-                        <span className="font-bold">3</span> 
+                        <span className="font-bold">3</span>
                     )}
                 </motion.button>
             </div>
@@ -185,9 +185,9 @@ const VideoSectionMobile = () => {
                         <div className="image-section-image-wrapper">
                             <img
                                 className="lazyimg"
-                                style={{ height: `${imgHeight}px`}}
-                                src={visImg} 
-                                alt="Ansicht des Schritts: Visualisierung" 
+                                style={{ height: `${imgHeight}px` }}
+                                src={visImg}
+                                alt="Ansicht des Schritts: Visualisierung"
                             />
                         </div>
                     </>

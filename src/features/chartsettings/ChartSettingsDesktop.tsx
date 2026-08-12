@@ -9,7 +9,7 @@ import { navigationTabName } from "../../constants";
 import { ChartType, PositionsType, SettingsDimensionsType, SettingsTabType, SettingsType } from "../../utils/types";
 
 type ChartSettingsDesktopPropsType = {
-    settingsCurrentPosition: React.MutableRefObject<PositionsType | undefined>,
+    settingsCurrentPosition: React.MutableRefObject<PositionsType | null>,
     settingsRef: React.MutableRefObject<SettingsType>,
     setSelectedChart: React.Dispatch<React.SetStateAction<ChartType>>,
     setDimensions: React.Dispatch<React.SetStateAction<SettingsDimensionsType>>,
@@ -37,18 +37,18 @@ const ChartSettingsDesktop = ({
     const body = document.body;
     const html = document.documentElement;
     //calculate maxHeight and maxWidth to use as dragConstraints
-    const maxHeight = Math.max( body.scrollHeight, body.offsetHeight, 
-        html.clientHeight, html.scrollHeight, html.offsetHeight );
-    const maxWidth = Math.max( body.scrollWidth, body.offsetWidth,
-        html.clientWidth, html.scrollWidth, html.offsetWidth );
+    const maxHeight = Math.max(body.scrollHeight, body.offsetHeight,
+        html.clientHeight, html.scrollHeight, html.offsetHeight);
+    const maxWidth = Math.max(body.scrollWidth, body.offsetWidth,
+        html.clientWidth, html.scrollWidth, html.offsetWidth);
 
-    const initialXPosition = !settingsCurrentPosition.current ? 0 
-        : settingsCurrentPosition.current.x + settingsWidth < body.scrollWidth ? settingsCurrentPosition.current.x 
-        : body.scrollWidth - settingsWidth;
+    const initialXPosition = !settingsCurrentPosition.current ? 0
+        : settingsCurrentPosition.current.x + settingsWidth < body.scrollWidth ? settingsCurrentPosition.current.x
+            : body.scrollWidth - settingsWidth;
 
-    const initialYPosition = !settingsCurrentPosition.current ? 0 
-        : settingsCurrentPosition.current.y + settingsHeight < body.scrollHeight ? settingsCurrentPosition.current.y 
-        : body.scrollHeight - settingsHeight;
+    const initialYPosition = !settingsCurrentPosition.current ? 0
+        : settingsCurrentPosition.current.y + settingsHeight < body.scrollHeight ? settingsCurrentPosition.current.y
+            : body.scrollHeight - settingsHeight;
 
     const startDrag = (event: PointerEvent) => {
         controls.start(event)
@@ -103,21 +103,21 @@ const ChartSettingsDesktop = ({
                     right: maxWidth - settingsWidth,
                 }}
                 dragElastic={0}
-                initial={{ 
+                initial={{
                     opacity: 1,
                     x: initialXPosition,
                     y: initialYPosition,
                 }}
-                exit={{ 
-                    opacity: 0, 
-                    x: body.scrollWidth/2 - settingsWidth/2,
+                exit={{
+                    opacity: 0,
+                    x: body.scrollWidth / 2 - settingsWidth / 2,
                     y: body.scrollHeight - settingsHeight,
                 }}
-                transition={{ duration: 1}}
+                transition={{ duration: 1 }}
             >
                 <div className="draggable-wrapper">
-                    <div 
-                        className="draggable" 
+                    <div
+                        className="draggable"
                         onPointerDown={startDrag}>
                         {activeTab === navigationTabName ? (
                             <div
@@ -130,25 +130,25 @@ const ChartSettingsDesktop = ({
                                     aria-label="Drag des Menüs möglich"
                                 />
                             </div>
-                        ): (
+                        ) : (
                             <div className="draggable-back-btn">
                                 <BackButton onClick={() => setActiveTab(navigationTabName)} />
                             </div>
                         )}
-                        
+
                         {activeTab}
                     </div>
 
-                    <button 
+                    <button
                         className="draggable-close"
                         type="button"
                         title="Diagrammkonfiguration schließen"
                         onClick={handleDragableClose}
                     />
                 </div>
-                
+
                 <div className="draggable-menu-content">
-                    <ChartSettings 
+                    <ChartSettings
                         settingsRef={settingsRef}
                         setSelectedChart={setSelectedChart}
                         setDimensions={setDimensions}
